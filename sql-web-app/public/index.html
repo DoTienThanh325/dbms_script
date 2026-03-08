@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Query Executor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SQL Query Executor</h1>
+            <p>Write your SQL queries safely via Web</p>
+        </header>
+
+        <main>
+            <div class="query-section">
+                <label for="sql-query">Enter SQL Statement (SELECT only):</label>
+                <textarea id="sql-query" placeholder="SELECT * FROM TableName..." rows="6"></textarea>
+                <div class="actions">
+                    <button id="btn-execute">Execute Query</button>
+                    <button id="btn-clear" class="secondary">Clear</button>
+                </div>
+            </div>
+
+            <div class="error-banner" id="error-banner"></div>
+
+            <div class="result-section">
+                <div class="result-header">
+                    <h2>Result</h2>
+                    <span id="row-count">0 rows</span>
+                </div>
+                <div class="table-container" id="table-container">
+                    <div class="empty-state">No data to display. Execute a query first.</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
