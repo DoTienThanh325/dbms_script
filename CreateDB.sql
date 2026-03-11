@@ -1,7 +1,7 @@
-create database music_streaming;
+create database music_streamingDB;
 go
 
-use music_streaming;
+use music_streamingDB;
 go
 
 -- 1. ROLES
@@ -161,3 +161,68 @@ CREATE TABLE USER_SONGS (
     listened_at DATETIME DEFAULT GETDATE()
 );
 GO
+
+CREATE INDEX IX_USER_SONGS_song_date ON USER_SONGS(song_id, listened_at);
+
+CREATE INDEX IX_USER_SONGS_user_id  ON USER_SONGS(user_id);
+
+CREATE INDEX IX_SONG_LIKES_song_id ON SONG_LIKES(song_id);
+
+CREATE INDEX IX_PAYMENTS_subscription_id ON PAYMENTS(subscription_id);
+
+CREATE INDEX IX_SONG_ARTISTS_song_id ON SONG_ARTISTS(song_id);
+
+CREATE INDEX IX_SONG_GENRES_song_id ON SONG_GENRES(song_id);
+
+CREATE NONCLUSTERED INDEX IX_USERS_username ON USERS (username);
+
+CREATE NONCLUSTERED INDEX IX_SONG_COMMENTS_userid ON SONG_COMMENTS (user_id);
+
+CREATE NONCLUSTERED INDEX IX_USER_SONGS_listened_at
+ON USER_SONGS (listened_at) INCLUDE (user_id);
+
+CREATE NONCLUSTERED INDEX IX_SONG_COMMENTS_songid_timestamp
+ON SONG_COMMENTS (song_id, timestamp_position)
+INCLUDE (user_id, comment_text, created_at); 
+
+CREATE NONCLUSTERED INDEX IX_COMMENT_LIKES_commentid
+ON COMMENT_LIKES (comment_id)
+INCLUDE (liked_at);
+
+
+CREATE INDEX IX_ARTISTS_name ON ARTISTS(name);
+
+CREATE INDEX IX_SONG_ARTISTS_artist_song ON SONG_ARTISTS(artist_id, song_id); 
+
+CREATE INDEX IX_GENRES_Name ON GENRES(genre_name);
+
+CREATE INDEX IX_USER_SUBS_Status_EndDate ON USER_SUBSCRIPTIONS(status, end_date);
+
+CREATE INDEX IX_SUB_PLANS_Name ON SUBSCRIPTION_PLANS(plan_name);
+
+CREATE INDEX IX_PAYMENTS_Status_Date ON PAYMENTS(status, payment_date);
+
+
+CREATE NONCLUSTERED INDEX IX_Songs_AlbumId ON SONGS(album_id);
+
+CREATE NONCLUSTERED INDEX IX_Playlists_UserId 
+ON PLAYLISTS(user_id) 
+INCLUDE (name, description, is_public, created_at);
+
+CREATE NONCLUSTERED INDEX IX_SongArtists_Song_Role ON SONG_ARTISTS(song_id, role);
+
+CREATE NONCLUSTERED INDEX IX_SongGenres_GenreId 
+ON SONG_GENRES(genre_id);
+
+CREATE NONCLUSTERED INDEX IX_SongComments_Song_Created 
+ON SONG_COMMENTS(song_id ASC, created_at DESC);
+
+CREATE NONCLUSTERED INDEX IDX_Songs_Name ON SONGS(name);
+
+CREATE NONCLUSTERED INDEX IDX_Songs_Duration_Desc ON SONGS(duration DESC);
+
+CREATE NONCLUSTERED INDEX IDX_Artists_Name ON ARTISTS(name);
+
+CREATE NONCLUSTERED INDEX IDX_Albums_ArtistId ON ALBUMS(artist_id);
+
+CREATE NONCLUSTERED INDEX IDX_Songs_AlbumId ON SONGS(album_id);
