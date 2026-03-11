@@ -132,7 +132,6 @@ CREATE TABLE SONG_COMMENTS (
     user_id INT NOT NULL FOREIGN KEY REFERENCES USERS(user_id),
     song_id INT NOT NULL FOREIGN KEY REFERENCES SONGS(song_id) ON DELETE CASCADE,
     comment_text NVARCHAR(MAX) NOT NULL,
-    parent_comment_id INT FOREIGN KEY REFERENCES SONG_COMMENTS(comment_id), -- Self-referencing FK
     timestamp_position INT CHECK (timestamp_position >= 0),
     created_at DATETIME DEFAULT GETDATE()
 );
