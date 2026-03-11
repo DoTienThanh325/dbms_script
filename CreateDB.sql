@@ -1,3 +1,4 @@
+
 create database music_streamingDB;
 go
 
@@ -85,11 +86,12 @@ CREATE TABLE SONGS (
 );
 
 -- 9. SONG_ARTISTS (N-N)
+drop table SONG_ARTISTS;
 CREATE TABLE SONG_ARTISTS (
+	id INT IDENTITY(1,1) PRIMARY KEY,
     song_id INT FOREIGN KEY REFERENCES SONGS(song_id) ON DELETE CASCADE,
     artist_id INT FOREIGN KEY REFERENCES ARTISTS(artist_id) ON DELETE CASCADE,
-    role VARCHAR(50) NOT NULL CHECK (role IN ('main', 'featured', 'composer', 'producer')),
-    PRIMARY KEY (song_id, artist_id)
+    role VARCHAR(50) NOT NULL
 );
 
 -- 10. GENRES
