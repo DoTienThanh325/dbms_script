@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQL Query Executor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/material-darker.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -17,7 +23,7 @@
         <main>
             <div class="query-section">
                 <label for="sql-query">Enter SQL Statement (SELECT only):</label>
-                <textarea id="sql-query" placeholder="SELECT * FROM TableName..." rows="6"></textarea>
+                <div id="sql-query"></div>
                 <div class="actions">
                     <button id="btn-execute">Execute Query</button>
                     <button id="btn-clear" class="secondary">Clear</button>
@@ -37,6 +43,10 @@
             </div>
         </main>
     </div>
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

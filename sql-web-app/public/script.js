@@ -1,7 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize CodeMirror
+    const editor = CodeMirror(document.getElementById('sql-query'), {
+        mode: 'text/x-sql',
+        theme: 'material-darker',
+        lineNumbers: true,
+        lineWrapping: true,
+        indentWithTabs: false,
+        indentUnit: 2,
+        tabSize: 2,
+        autofocus: true,
+        height: 'auto',
+        styleActiveLine: true,
+        matchBrackets: true,
+        autoCloseBrackets: true,
+        placeholder: 'SELECT * FROM TableName...'
+    });
+
+    // Set minimum height
+    editor.setSize(null, 400);
+
     const btnExecute = document.getElementById('btn-execute');
     const btnClear = document.getElementById('btn-clear');
-    const sqlQueryInput = document.getElementById('sql-query');
     const errorBanner = document.getElementById('error-banner');
     const tableContainer = document.getElementById('table-container');
     const rowCountSpan = document.getElementById('row-count');
@@ -94,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     btnExecute.addEventListener('click', async () => {
-        const query = sqlQueryInput.value.trim();
+        const query = editor.getValue().trim();
 
         if (!query) {
             showError('Please enter an SQL query.');
@@ -130,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     btnClear.addEventListener('click', () => {
-        sqlQueryInput.value = '';
+        editor.setValue('');
         hideError();
         tableContainer.innerHTML = '<div class="empty-state">No data to display. Execute a query first.</div>';
         rowCountSpan.textContent = '0 rows';

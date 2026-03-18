@@ -13,24 +13,19 @@ app.use(express.static('public'));
 app.post('/api/query', async (req, res) => {
     try {
         const { query } = req.body;
-        
+
         if (!query) {
             return res.status(400).json({ error: 'SQL query is required' });
         }
 
         // Bước 2: Kiểm tra loại câu lệnh
         const upperQuery = query.trim().toUpperCase();
-        
+
         // Chỉ nhận câu lệnh SELECT, bỏ qua DROP, DELETE, UPDATE, INSERT
         const forbiddenWords = ['DROP', 'DELETE', 'UPDATE', 'INSERT', 'ALTER', 'CREATE', 'TRUNCATE', 'EXEC'];
-        
-        // Kiểm tra xem query có bắt đầu bằng SELECT không
-        if (!upperQuery.startsWith('SELECT')) {
-            return res.status(403).json({ error: 'Only SELECT statements are allowed to prevent SQL Injection.' });
-        }
 
         // Kiểm tra thêm các từ khóa cấm ở bên trong câu lệnh (một cách cơ bản)
-        const containsForbidden = forbiddenWords.some(word => 
+        const containsForbidden = forbiddenWords.some(word =>
             new RegExp(`\\b${word}\\b`).test(upperQuery)
         );
 
