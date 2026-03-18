@@ -1,623 +1,475 @@
 ﻿USE music_streamingDB;
 GO
-
--- =============================================
--- SAMPLE DATA FOR music_streamingDB
--- 20+ records per table (except ROLES & SUBSCRIPTION_PLANS)
--- Supports all 40 queries
--- =============================================
--- NOTE: Some queries reference specific IDs. Adjust as needed:
---   Q7:  album_id = 2061 -> use album_id = 2 (Sky Tour album has 4 songs)
---   Q14: @song_id       -> use 6
---   Q16: @song_id, @timestamp -> use 6, 30
---   Q18: comment_id = 303181  -> use comment_id = 100
--- =============================================
-
--- 1. ROLES (3 rows - excluded from 20+ requirement)
 SET IDENTITY_INSERT ROLES ON;
 INSERT INTO ROLES (role_id, role_name, permissions) VALUES
-(1, 'admin',     'all'),
-(2, 'user',      'read,write,comment,like'),
+(1, 'admin', 'all'),
+(2, 'user', 'read,write,comment,like'),
 (3, 'moderator', 'read,write,comment,like,delete_comments');
 SET IDENTITY_INSERT ROLES OFF;
 GO
-
--- 2. USERS (20 rows)
 SET IDENTITY_INSERT USERS ON;
 INSERT INTO USERS (user_id, username, email, password_hash, avatar_url, role_id) VALUES
-(1,  'user_1',    'user1@mail.com',    'hash_abc123', 'https://avatar.com/user1.jpg',   2),
-(2,  'user_2',    'user2@mail.com',    'hash_def456', 'https://avatar.com/user2.jpg',   2),
-(3,  'user_3',    'user3@mail.com',    'hash_ghi789', 'https://avatar.com/user3.jpg',   2),
-(4,  'user_4',    'user4@mail.com',    'hash_jkl012', 'https://avatar.com/user4.jpg',   2),
-(5,  'user_5',    'user5@mail.com',    'hash_mno345', 'https://avatar.com/user5.jpg',   2),
-(6,  'admin_1',   'admin@mail.com',    'hash_pqr678', 'https://avatar.com/admin.jpg',   1),
-(7,  'mod_1',     'mod@mail.com',      'hash_stu901', 'https://avatar.com/mod.jpg',     3),
-(8,  'user_6',    'user6@mail.com',    'hash_vwx234', 'https://avatar.com/user6.jpg',   2),
-(9,  'user_7',    'user7@mail.com',    'hash_yza567', 'https://avatar.com/user7.jpg',   2),
-(10, 'user_8',    'user8@mail.com',    'hash_bcd890', 'https://avatar.com/user8.jpg',   2),
-(11, 'user_9',    'user9@mail.com',    'hash_efg123', 'https://avatar.com/user9.jpg',   2),
-(12, 'user_10',   'user10@mail.com',   'hash_hij456', 'https://avatar.com/user10.jpg',  2),
-(13, 'user_11',   'user11@mail.com',   'hash_klm789', 'https://avatar.com/user11.jpg',  2),
-(14, 'user_12',   'user12@mail.com',   'hash_nop012', 'https://avatar.com/user12.jpg',  2),
-(15, 'user_13',   'user13@mail.com',   'hash_qrs345', 'https://avatar.com/user13.jpg',  2),
-(16, 'user_14',   'user14@mail.com',   'hash_tuv678', 'https://avatar.com/user14.jpg',  2),
-(17, 'user_15',   'user15@mail.com',   'hash_wxy901', 'https://avatar.com/user15.jpg',  2),
-(18, 'user_16',   'user16@mail.com',   'hash_zab234', 'https://avatar.com/user16.jpg',  2),
-(19, 'user_17',   'user17@mail.com',   'hash_cde567', 'https://avatar.com/user17.jpg',  3),
-(20, 'user_18',   'user18@mail.com',   'hash_fgh890', 'https://avatar.com/user18.jpg',  2);
+(1, 'user_1', 'user1@mail.com', 'hash_abc123', 'https://avatar.com/user1.jpg', 2),
+(2, 'user_2', 'user2@mail.com', 'hash_def456', 'https://avatar.com/user2.jpg', 2),
+(3, 'user_3', 'user3@mail.com', 'hash_ghi789', 'https://avatar.com/user3.jpg', 2),
+(4, 'user_4', 'user4@mail.com', 'hash_jkl012', 'https://avatar.com/user4.jpg', 2),
+(5, 'user_5', 'user5@mail.com', 'hash_mno345', 'https://avatar.com/user5.jpg', 2),
+(6, 'admin_1', 'admin@mail.com', 'hash_pqr678', 'https://avatar.com/admin.jpg', 1),
+(7, 'mod_1', 'mod@mail.com', 'hash_stu901', 'https://avatar.com/mod.jpg', 3),
+(8, 'user_6', 'user6@mail.com', 'hash_vwx234', 'https://avatar.com/user6.jpg', 2),
+(9, 'user_7', 'user7@mail.com', 'hash_yza567', 'https://avatar.com/user7.jpg', 2),
+(10, 'user_8', 'user8@mail.com', 'hash_bcd890', 'https://avatar.com/user8.jpg', 2),
+(11, 'user_9', 'user9@mail.com', 'hash_efg123', 'https://avatar.com/user9.jpg', 2),
+(12, 'user_10', 'user10@mail.com', 'hash_hij456', 'https://avatar.com/user10.jpg', 2),
+(13, 'user_11', 'user11@mail.com', 'hash_klm789', 'https://avatar.com/user11.jpg', 2),
+(14, 'user_12', 'user12@mail.com', 'hash_nop012', 'https://avatar.com/user12.jpg', 2),
+(15, 'user_13', 'user13@mail.com', 'hash_qrs345', 'https://avatar.com/user13.jpg', 2),
+(16, 'user_14', 'user14@mail.com', 'hash_tuv678', 'https://avatar.com/user14.jpg', 2),
+(17, 'user_15', 'user15@mail.com', 'hash_wxy901', 'https://avatar.com/user15.jpg', 2),
+(18, 'user_16', 'user16@mail.com', 'hash_zab234', 'https://avatar.com/user16.jpg', 2),
+(19, 'user_17', 'user17@mail.com', 'hash_cde567', 'https://avatar.com/user17.jpg', 3),
+(20, 'user_18', 'user18@mail.com', 'hash_fgh890', 'https://avatar.com/user18.jpg', 2);
 SET IDENTITY_INSERT USERS OFF;
 GO
-
--- 3. SUBSCRIPTION_PLANS (5 rows - excluded from 20+ requirement)
 SET IDENTITY_INSERT SUBSCRIPTION_PLANS ON;
 INSERT INTO SUBSCRIPTION_PLANS (plan_id, plan_name, price, duration_months, ad_free, high_quality_audio, max_downloads) VALUES
-(1, 'Free',    0.00,  1, 0, 0, 0),
-(2, 'Basic',   4.99,  1, 1, 0, 10),
-(3, 'Premium', 9.99,  1, 1, 1, 100),
-(4, 'Family',  14.99, 1, 1, 1, 200),
-(5, 'Student', 2.99,  1, 1, 1, 50);
+(1, 'Free', 0.00, 1, 0, 0, 0),
+(2, 'Basic', 4.99, 1, 1, 0, 10),
+(3, 'Premium', 9.99, 1, 1, 1, 100),
+(4, 'Family', 14.99, 1, 1, 1, 200),
+(5, 'Student', 2.99, 1, 1, 1, 50);
 SET IDENTITY_INSERT SUBSCRIPTION_PLANS OFF;
 GO
-
--- 4. USER_SUBSCRIPTIONS (25 rows)
 SET IDENTITY_INSERT USER_SUBSCRIPTIONS ON;
 INSERT INTO USER_SUBSCRIPTIONS (subscription_id, user_id, plan_id, start_date, end_date, status, auto_renew) VALUES
-(1,  1,  3, '2025-12-01', '2026-04-01', 'active',    1),   -- user_1,  Premium
-(2,  2,  3, '2026-01-15', '2026-05-15', 'active',    1),   -- user_2,  Premium
-(3,  3,  2, '2025-11-01', '2026-02-01', 'expired',   0),   -- user_3,  Basic (expired)
-(4,  4,  4, '2026-02-01', '2026-06-01', 'active',    1),   -- user_4,  Family
-(5,  5,  3, '2026-01-01', '2026-04-01', 'active',    0),   -- user_5,  Premium
-(6,  6,  1, '2026-03-01', '2026-04-01', 'active',    0),   -- admin_1, Free
-(7,  7,  2, '2026-02-15', '2026-03-25', 'active',    1),   -- mod_1,   Basic (expiring soon)
-(8,  8,  3, '2026-01-01', '2026-05-01', 'active',    1),   -- user_6,  Premium
-(9,  9,  5, '2026-03-01', '2026-04-15', 'active',    0),   -- user_7,  Student (expiring soon)
-(10, 10, 3, '2025-10-01', '2026-03-20', 'active',    0),   -- user_8,  Premium (expiring very soon)
-(11, 3,  3, '2026-03-01', '2026-06-01', 'active',    1),   -- user_3,  Premium (renewed)
-(12, 1,  2, '2025-06-01', '2025-12-01', 'expired',   0),   -- user_1,  Basic (old)
-(13, 11, 3, '2026-02-01', '2026-05-01', 'active',    1),   -- user_9,  Premium
-(14, 12, 2, '2026-01-01', '2026-04-01', 'active',    0),   -- user_10, Basic
-(15, 13, 4, '2026-02-15', '2026-06-15', 'active',    1),   -- user_11, Family
-(16, 14, 3, '2026-03-01', '2026-06-01', 'active',    1),   -- user_12, Premium
-(17, 15, 5, '2026-02-01', '2026-05-01', 'active',    0),   -- user_13, Student
-(18, 16, 3, '2026-01-15', '2026-04-15', 'active',    1),   -- user_14, Premium
-(19, 17, 2, '2026-03-01', '2026-04-01', 'active',    0),   -- user_15, Basic (expiring soon)
-(20, 18, 1, '2026-03-01', '2026-04-01', 'active',    0),   -- user_16, Free
-(21, 19, 3, '2026-02-01', '2026-05-01', 'active',    1),   -- user_17, Premium
-(22, 20, 4, '2026-01-01', '2026-04-01', 'active',    1),   -- user_18, Family
-(23, 11, 2, '2025-09-01', '2026-02-01', 'expired',   0),   -- user_9 old Basic
-(24, 14, 1, '2025-06-01', '2025-09-01', 'cancelled', 0),   -- user_12 old Free (cancelled)
-(25, 16, 5, '2025-08-01', '2025-11-01', 'expired',   0);   -- user_14 old Student
+(1, 1, 3, '2025-12-01', '2026-04-01', 'active', 1),
+(2, 2, 3, '2026-01-15', '2026-05-15', 'active', 1),
+(3, 3, 2, '2025-11-01', '2026-02-01', 'expired', 0),
+(4, 4, 4, '2026-02-01', '2026-06-01', 'active', 1),
+(5, 5, 3, '2026-01-01', '2026-04-01', 'active', 0),
+(6, 6, 1, '2026-03-01', '2026-04-01', 'active', 0),
+(7, 7, 2, '2026-02-15', '2026-03-25', 'active', 1),
+(8, 8, 3, '2026-01-01', '2026-05-01', 'active', 1),
+(9, 9, 5, '2026-03-01', '2026-04-15', 'active', 0),
+(10, 10, 3, '2025-10-01', '2026-03-20', 'active', 0),
+(11, 3, 3, '2026-03-01', '2026-06-01', 'active', 1),
+(12, 1, 2, '2025-06-01', '2025-12-01', 'expired', 0),
+(13, 11, 3, '2026-02-01', '2026-05-01', 'active', 1),
+(14, 12, 2, '2026-01-01', '2026-04-01', 'active', 0),
+(15, 13, 4, '2026-02-15', '2026-06-15', 'active', 1),
+(16, 14, 3, '2026-03-01', '2026-06-01', 'active', 1),
+(17, 15, 5, '2026-02-01', '2026-05-01', 'active', 0),
+(18, 16, 3, '2026-01-15', '2026-04-15', 'active', 1),
+(19, 17, 2, '2026-03-01', '2026-04-01', 'active', 0),
+(20, 18, 1, '2026-03-01', '2026-04-01', 'active', 0),
+(21, 19, 3, '2026-02-01', '2026-05-01', 'active', 1),
+(22, 20, 4, '2026-01-01', '2026-04-01', 'active', 1),
+(23, 11, 2, '2025-09-01', '2026-02-01', 'expired', 0),
+(24, 14, 1, '2025-06-01', '2025-09-01', 'cancelled', 0),
+(25, 16, 5, '2025-08-01', '2025-11-01', 'expired', 0);
 SET IDENTITY_INSERT USER_SUBSCRIPTIONS OFF;
 GO
-
--- 5. PAYMENTS (30 rows)
 INSERT INTO PAYMENTS (subscription_id, amount, payment_date, status, transaction_id) VALUES
--- user_1 history (sub 1 + sub 12) -> Q25
-(12, 4.99,  '2025-06-01 08:00:00', 'completed', 'TXN_018'),
-(1,  9.99,  '2025-12-01 09:00:00', 'completed', 'TXN_001'),
-(1,  9.99,  '2026-01-01 09:00:00', 'completed', 'TXN_002'),
-(1,  9.99,  '2026-02-01 09:00:00', 'completed', 'TXN_003'),
-(1,  9.99,  '2026-03-01 09:00:00', 'completed', 'TXN_004'),
--- user_2
-(2,  9.99,  '2026-01-15 10:00:00', 'completed', 'TXN_005'),
-(2,  9.99,  '2026-02-15 10:00:00', 'completed', 'TXN_006'),
-(2,  9.99,  '2026-03-15 10:00:00', 'completed', 'TXN_007'),
--- user_3
-(3,  4.99,  '2025-11-01 11:00:00', 'completed', 'TXN_008'),
-(11, 9.99,  '2026-03-01 11:00:00', 'completed', 'TXN_017'),
--- user_4
-(4,  14.99, '2026-02-01 12:00:00', 'completed', 'TXN_009'),
-(4,  14.99, '2026-03-01 12:00:00', 'completed', 'TXN_010'),
--- user_5 (subscription_id = 5) -> Q34
-(5,  9.99,  '2026-01-01 13:00:00', 'completed', 'TXN_011'),
-(5,  9.99,  '2026-02-01 13:00:00', 'failed',    'TXN_019'),
-(5,  9.99,  '2026-03-10 13:00:00', 'completed', 'TXN_012'),
--- mod_1
-(7,  4.99,  '2026-02-15 14:00:00', 'completed', 'TXN_013'),
--- user_6
-(8,  9.99,  '2026-01-01 15:00:00', 'completed', 'TXN_014'),
--- user_7
-(9,  2.99,  '2026-03-01 16:00:00', 'completed', 'TXN_015'),
--- user_8
-(10, 9.99,  '2025-10-01 17:00:00', 'completed', 'TXN_016'),
--- NEW: user_9
-(13, 9.99,  '2026-02-01 09:30:00', 'completed', 'TXN_020'),
-(13, 9.99,  '2026-03-01 09:30:00', 'completed', 'TXN_021'),
-(23, 4.99,  '2025-09-01 10:00:00', 'completed', 'TXN_022'),
--- user_10
-(14, 4.99,  '2026-01-01 11:00:00', 'completed', 'TXN_023'),
-(14, 4.99,  '2026-03-01 11:30:00', 'completed', 'TXN_024'),
--- user_11
+(12, 4.99, '2025-06-01 08:00:00', 'completed', 'TXN_018'),
+(1, 9.99, '2025-12-01 09:00:00', 'completed', 'TXN_001'),
+(1, 9.99, '2026-01-01 09:00:00', 'completed', 'TXN_002'),
+(1, 9.99, '2026-02-01 09:00:00', 'completed', 'TXN_003'),
+(1, 9.99, '2026-03-01 09:00:00', 'completed', 'TXN_004'),
+(2, 9.99, '2026-01-15 10:00:00', 'completed', 'TXN_005'),
+(2, 9.99, '2026-02-15 10:00:00', 'completed', 'TXN_006'),
+(2, 9.99, '2026-03-15 10:00:00', 'completed', 'TXN_007'),
+(3, 4.99, '2025-11-01 11:00:00', 'completed', 'TXN_008'),
+(11, 9.99, '2026-03-01 11:00:00', 'completed', 'TXN_017'),
+(4, 14.99, '2026-02-01 12:00:00', 'completed', 'TXN_009'),
+(4, 14.99, '2026-03-01 12:00:00', 'completed', 'TXN_010'),
+(5, 9.99, '2026-01-01 13:00:00', 'completed', 'TXN_011'),
+(5, 9.99, '2026-02-01 13:00:00', 'failed', 'TXN_019'),
+(5, 9.99, '2026-03-10 13:00:00', 'completed', 'TXN_012'),
+(7, 4.99, '2026-02-15 14:00:00', 'completed', 'TXN_013'),
+(8, 9.99, '2026-01-01 15:00:00', 'completed', 'TXN_014'),
+(9, 2.99, '2026-03-01 16:00:00', 'completed', 'TXN_015'),
+(10, 9.99, '2025-10-01 17:00:00', 'completed', 'TXN_016'),
+(13, 9.99, '2026-02-01 09:30:00', 'completed', 'TXN_020'),
+(13, 9.99, '2026-03-01 09:30:00', 'completed', 'TXN_021'),
+(23, 4.99, '2025-09-01 10:00:00', 'completed', 'TXN_022'),
+(14, 4.99, '2026-01-01 11:00:00', 'completed', 'TXN_023'),
+(14, 4.99, '2026-03-01 11:30:00', 'completed', 'TXN_024'),
 (15, 14.99, '2026-02-15 12:00:00', 'completed', 'TXN_025'),
--- user_12
-(16, 9.99,  '2026-03-01 13:30:00', 'completed', 'TXN_026'),
--- user_13
-(17, 2.99,  '2026-02-01 14:00:00', 'completed', 'TXN_027'),
--- user_14
-(18, 9.99,  '2026-01-15 15:00:00', 'completed', 'TXN_028'),
-(25, 2.99,  '2025-08-01 16:00:00', 'completed', 'TXN_029'),
--- user_18
+(16, 9.99, '2026-03-01 13:30:00', 'completed', 'TXN_026'),
+(17, 2.99, '2026-02-01 14:00:00', 'completed', 'TXN_027'),
+(18, 9.99, '2026-01-15 15:00:00', 'completed', 'TXN_028'),
+(25, 2.99, '2025-08-01 16:00:00', 'completed', 'TXN_029'),
 (22, 14.99, '2026-01-01 17:00:00', 'completed', 'TXN_030');
 GO
-
--- 6. ARTISTS (20 artists) -> Q3: 12 from Việt Nam
 SET IDENTITY_INSERT ARTISTS ON;
 INSERT INTO ARTISTS (artist_id, name, country, bio, cover_image_url) VALUES
-(1,  N'Sơn Tùng M-TP',    N'Việt Nam',  N'Ca sĩ, nhạc sĩ nổi tiếng Việt Nam',           'https://img.com/sontung.jpg'),
-(2,  N'Đen Vâu',          N'Việt Nam',  N'Rapper hàng đầu Việt Nam',                      'https://img.com/denvau.jpg'),
-(3,  N'Hòa Minzy',        N'Việt Nam',  N'Ca sĩ nhạc Pop Việt Nam',                       'https://img.com/hoaminzy.jpg'),
-(4,  N'BLACKPINK',         N'Hàn Quốc', N'Nhóm nhạc nữ Kpop nổi tiếng',                  'https://img.com/blackpink.jpg'),
-(5,  N'Trúc Nhân',        N'Việt Nam',  N'Ca sĩ sáng tạo Việt Nam',                       'https://img.com/trucnhan.jpg'),
-(6,  N'Bích Phương',      N'Việt Nam',  N'Ca sĩ nhạc Pop Việt Nam',                       'https://img.com/bichphuong.jpg'),
-(7,  N'Jack',              N'Việt Nam',  N'Ca sĩ trẻ tài năng',                           'https://img.com/jack.jpg'),
-(8,  N'Taylor Swift',      N'Mỹ',       N'Pop superstar and songwriter',                   'https://img.com/taylorswift.jpg'),
-(9,  N'Ed Sheeran',        N'Anh',      N'Singer-songwriter nổi tiếng thế giới',           'https://img.com/edsheeran.jpg'),
-(10, N'Karik',             N'Việt Nam',  N'Rapper nổi tiếng Việt Nam',                      'https://img.com/karik.jpg'),
-(11, N'Mỹ Tâm',           N'Việt Nam',  N'Họa mi tóc nâu, diva nhạc Việt',               'https://img.com/mytam.jpg'),
-(12, N'Đông Nhi',         N'Việt Nam',  N'Ca sĩ nhạc Pop năng động',                      'https://img.com/dongnhi.jpg'),
-(13, N'Noo Phước Thịnh', N'Việt Nam',  N'Ca sĩ, vũ công nổi tiếng',                      'https://img.com/noophuocthinh.jpg'),
-(14, N'MIN',               N'Việt Nam',  N'Ca sĩ trẻ phong cách hiện đại',                'https://img.com/min.jpg'),
-(15, N'Vũ.',              N'Việt Nam',  N'Ca sĩ Indie nổi bật',                           'https://img.com/vu.jpg'),
-(16, N'BTS',               N'Hàn Quốc', N'Nhóm nhạc nam Kpop hàng đầu thế giới',         'https://img.com/bts.jpg'),
-(17, N'Bruno Mars',        N'Mỹ',       N'Ca sĩ Pop/R&B đa tài',                          'https://img.com/brunomars.jpg'),
-(18, N'Adele',             N'Anh',      N'Ca sĩ giọng khủng nước Anh',                    'https://img.com/adele.jpg'),
-(19, N'Phan Mạnh Quỳnh', N'Việt Nam',  N'Nhạc sĩ tài năng, ca sĩ Việt Nam',              'https://img.com/phanmanhquynh.jpg'),
-(20, N'Tóc Tiên',         N'Việt Nam',  N'Ca sĩ phong cách hiện đại, quyến rũ',          'https://img.com/toctien.jpg');
+(1, N'Sơn Tùng M-TP', N'Việt Nam', N'Ca sĩ, nhạc sĩ nổi tiếng Việt Nam', 'https://img.com/sontung.jpg'),
+(2, N'Đen Vâu', N'Việt Nam', N'Rapper hàng đầu Việt Nam', 'https://img.com/denvau.jpg'),
+(3, N'Hòa Minzy', N'Việt Nam', N'Ca sĩ nhạc Pop Việt Nam', 'https://img.com/hoaminzy.jpg'),
+(4, N'BLACKPINK', N'Hàn Quốc', N'Nhóm nhạc nữ Kpop nổi tiếng', 'https://img.com/blackpink.jpg'),
+(5, N'Trúc Nhân', N'Việt Nam', N'Ca sĩ sáng tạo Việt Nam', 'https://img.com/trucnhan.jpg'),
+(6, N'Bích Phương', N'Việt Nam', N'Ca sĩ nhạc Pop Việt Nam', 'https://img.com/bichphuong.jpg'),
+(7, N'Jack', N'Việt Nam', N'Ca sĩ trẻ tài năng', 'https://img.com/jack.jpg'),
+(8, N'Taylor Swift', N'Mỹ', N'Pop superstar and songwriter', 'https://img.com/taylorswift.jpg'),
+(9, N'Ed Sheeran', N'Anh', N'Singer-songwriter nổi tiếng thế giới', 'https://img.com/edsheeran.jpg'),
+(10, N'Karik', N'Việt Nam', N'Rapper nổi tiếng Việt Nam', 'https://img.com/karik.jpg'),
+(11, N'Mỹ Tâm', N'Việt Nam', N'Họa mi tóc nâu, diva nhạc Việt', 'https://img.com/mytam.jpg'),
+(12, N'Đông Nhi', N'Việt Nam', N'Ca sĩ nhạc Pop năng động', 'https://img.com/dongnhi.jpg'),
+(13, N'Noo Phước Thịnh', N'Việt Nam', N'Ca sĩ, vũ công nổi tiếng', 'https://img.com/noophuocthinh.jpg'),
+(14, N'MIN', N'Việt Nam', N'Ca sĩ trẻ phong cách hiện đại', 'https://img.com/min.jpg'),
+(15, N'Vũ.', N'Việt Nam', N'Ca sĩ Indie nổi bật', 'https://img.com/vu.jpg'),
+(16, N'BTS', N'Hàn Quốc', N'Nhóm nhạc nam Kpop hàng đầu thế giới', 'https://img.com/bts.jpg'),
+(17, N'Bruno Mars', N'Mỹ', N'Ca sĩ Pop/R&B đa tài', 'https://img.com/brunomars.jpg'),
+(18, N'Adele', N'Anh', N'Ca sĩ giọng khủng nước Anh', 'https://img.com/adele.jpg'),
+(19, N'Phan Mạnh Quỳnh', N'Việt Nam', N'Nhạc sĩ tài năng, ca sĩ Việt Nam', 'https://img.com/phanmanhquynh.jpg'),
+(20, N'Tóc Tiên', N'Việt Nam', N'Ca sĩ phong cách hiện đại, quyến rũ', 'https://img.com/toctien.jpg');
 SET IDENTITY_INSERT ARTISTS OFF;
 GO
-
--- 7. ALBUMS (20 albums)
 SET IDENTITY_INSERT ALBUMS ON;
 INSERT INTO ALBUMS (album_id, title, artist_id, release_year, cover_image_url, record_label) VALUES
-(1,  N'M-TP M-TP',                  1,  2017, 'https://img.com/album1.jpg',  N'M-TP Entertainment'),
-(2,  N'Sky Tour',                    1,  2020, 'https://img.com/album2.jpg',  N'M-TP Entertainment'),
-(3,  N'Đông Kiếm Em',              2,  2021, 'https://img.com/album3.jpg',  N'Independent'),
-(4,  N'The Album',                   4,  2020, 'https://img.com/album4.jpg',  N'YG Entertainment'),
-(5,  N'Lover',                       8,  2019, 'https://img.com/album5.jpg',  N'Republic Records'),
-(6,  N'÷ (Divide)',                 9,  2017, 'https://img.com/album6.jpg',  N'Atlantic Records'),
-(7,  N'Bích Phương Collection',    6,  2020, 'https://img.com/album7.jpg',  N'Independent'),
-(8,  N'Trúc Nhân Hits',            5,  2022, 'https://img.com/album8.jpg',  N'Independent'),
-(9,  N'Hòa Minzy Best',            3,  2021, 'https://img.com/album9.jpg',  N'Independent'),
-(10, N'Jack Universe',               7,  2023, 'https://img.com/album10.jpg', N'Independent'),
-(11, N'Tâm 9',                      11, 2018, 'https://img.com/album11.jpg', N'Independent'),
-(12, N'Xin Lỗi Anh Quá Phiền',   12, 2021, 'https://img.com/album12.jpg', N'Independent'),
-(13, N'Chạm Khẽ Tim Anh',         13, 2019, 'https://img.com/album13.jpg', N'Independent'),
+(1, N'M-TP M-TP', 1, 2017, 'https://img.com/album1.jpg', N'M-TP Entertainment'),
+(2, N'Sky Tour', 1, 2020, 'https://img.com/album2.jpg', N'M-TP Entertainment'),
+(3, N'Đông Kiếm Em', 2, 2021, 'https://img.com/album3.jpg', N'Independent'),
+(4, N'The Album', 4, 2020, 'https://img.com/album4.jpg', N'YG Entertainment'),
+(5, N'Lover', 8, 2019, 'https://img.com/album5.jpg', N'Republic Records'),
+(6, N'÷ (Divide)', 9, 2017, 'https://img.com/album6.jpg', N'Atlantic Records'),
+(7, N'Bích Phương Collection', 6, 2020, 'https://img.com/album7.jpg', N'Independent'),
+(8, N'Trúc Nhân Hits', 5, 2022, 'https://img.com/album8.jpg', N'Independent'),
+(9, N'Hòa Minzy Best', 3, 2021, 'https://img.com/album9.jpg', N'Independent'),
+(10, N'Jack Universe', 7, 2023, 'https://img.com/album10.jpg', N'Independent'),
+(11, N'Tâm 9', 11, 2018, 'https://img.com/album11.jpg', N'Independent'),
+(12, N'Xin Lỗi Anh Quá Phiền', 12, 2021, 'https://img.com/album12.jpg', N'Independent'),
+(13, N'Chạm Khẽ Tim Anh', 13, 2019, 'https://img.com/album13.jpg', N'Independent'),
 (14, N'Trên Tình Bạn Dưới Tình Yêu', 14, 2020, 'https://img.com/album14.jpg', N'Universal Music'),
-(15, N'Lạ Lùng',                    15, 2019, 'https://img.com/album15.jpg', N'Independent'),
-(16, N'Map of the Soul: 7',          16, 2020, 'https://img.com/album16.jpg', N'Big Hit Entertainment'),
-(17, N'24K Magic',                    17, 2016, 'https://img.com/album17.jpg', N'Atlantic Records'),
-(18, N'30',                           18, 2021, 'https://img.com/album18.jpg', N'Columbia Records'),
+(15, N'Lạ Lùng', 15, 2019, 'https://img.com/album15.jpg', N'Independent'),
+(16, N'Map of the Soul: 7', 16, 2020, 'https://img.com/album16.jpg', N'Big Hit Entertainment'),
+(17, N'24K Magic', 17, 2016, 'https://img.com/album17.jpg', N'Atlantic Records'),
+(18, N'30', 18, 2021, 'https://img.com/album18.jpg', N'Columbia Records'),
 (19, N'Có Chàng Trai Viết Lên Cây', 19, 2019, 'https://img.com/album19.jpg', N'Independent'),
-(20, N'Big Girls Don''t Cry',        20, 2016, 'https://img.com/album20.jpg', N'Universal Music');
+(20, N'Big Girls Don''t Cry', 20, 2016, 'https://img.com/album20.jpg', N'Universal Music');
 SET IDENTITY_INSERT ALBUMS OFF;
 GO
-
--- 8. SONGS (45 songs)
 SET IDENTITY_INSERT SONGS ON;
 INSERT INTO SONGS (song_id, name, album_id, duration, file_path, lyrics) VALUES
--- Album 1: M-TP M-TP (Sơn Tùng)
-(1,  N'Lạc Trôi',                       1,  280, '/music/lac_troi.mp3',           N'Lạc trôi giữa dòng đời vô định...'),
-(2,  N'Nơi Này Có Anh',                1,  300, '/music/noi_nay_co_anh.mp3',     N'Nơi này có anh, ngàn hoa bay theo gió...'),
-(6,  N'Nắng Ấm Xa Dần',               1,  250, '/music/nang_am_xa_dan.mp3',     N'Nắng ấm nay đã xa dần...'),
--- Album 2: Sky Tour (Sơn Tùng)
-(3,  N'Chạy Ngay Đi',                  2,  265, '/music/chay_ngay_di.mp3',       N'Chạy ngay đi, chạy ngay đi...'),
-(4,  N'Hãy Trao Cho Anh',              2,  310, '/music/hay_trao_cho_anh.mp3',   N'Give it to me, hãy trao cho anh...'),
-(5,  N'Muộn Rồi Mà Sao Còn',          2,  295, '/music/muon_roi.mp3',           N'Muộn rồi mà sao còn mong...'),
-(24, N'Waiting For You',                 2,  220, '/music/waiting_for_you.mp3',    N'Waiting for you, em ơi...'),
--- Album 3: Đông Kiếm Em (Đen Vâu)
-(7,  N'Bài Này Chill Phết',            3,  275, '/music/bai_nay_chill.mp3',      N'Bài này chill phết, nghe đi rồi biết...'),
-(8,  N'Đưa Nhau Đi Trốn',             3,  260, '/music/dua_nhau_di_tron.mp3',   N'Đưa nhau đi trốn khỏi thế gian...'),
-(23, N'Nắng Có Mang Em Về',            3,  290, '/music/nang_co_mang.mp3',       N'Nắng có mang em về nơi đó...'),
--- Album 4: The Album (BLACKPINK)
-(9,  N'How You Like That',              4,  190, '/music/hylt.mp3',               N'How you like that, how you like that...'),
-(10, N'Lovesick Girls',                  4,  210, '/music/lovesick_girls.mp3',     N'We are lovesick girls...'),
--- Album 5: Lover (Taylor Swift)
-(19, N'Lover',                           5,  221, '/music/lover.mp3',              N'We could leave the Christmas lights up...'),
-(20, N'Shake It Off',                    5,  242, '/music/shake_it_off.mp3',       N'Cause the players gonna play play play...'),
--- Album 6: Divide (Ed Sheeran)
-(17, N'Shape of You',                    6,  234, '/music/shape_of_you.mp3',       N'The club isn''t the best place to find a lover...'),
-(18, N'Perfect',                         6,  263, '/music/perfect.mp3',            N'I found a love for me...'),
--- Album 7: Bích Phương Collection
-(11, N'Đi Đu Đưa Đi',                 7,  205, '/music/di_du_dua_di.mp3',       N'Đi đu đưa đi, đi đu đưa đi...'),
-(12, N'Bùa Yêu',                        7,  240, '/music/bua_yeu.mp3',            N'Bùa yêu bùa yêu...'),
--- Album 8: Trúc Nhân Hits
-(13, N'Có Không Giữ Mất Đừng Tìm',    8,  230, '/music/co_khong_giu.mp3',       N'Có không giữ, mất đừng tìm...'),
-(14, N'Sáng Mắt Chưa',                 8,  215, '/music/sang_mat_chua.mp3',      N'Sáng mắt chưa, sáng mắt chưa...'),
--- Album 9: Hòa Minzy Best
-(15, N'Rời Bỏ',                         9,  285, '/music/roi_bo.mp3',             N'Rời bỏ, em rời bỏ...'),
-(16, N'Không Thể Cùng Nhau Suốt Kiếp', 9,  270, '/music/khong_the.mp3',          N'Không thể cùng nhau suốt kiếp...'),
--- Album 10: Jack Universe
-(21, N'Hồng Nhan',                      10, 255, '/music/hong_nhan.mp3',          N'Hồng nhan bạc phận...'),
-(22, N'Sóng Gió',                       10, 248, '/music/song_gio.mp3',           N'Sóng gió cuộc đời...'),
-(25, N'Cô Thắm Không Về',              10, 235, '/music/co_tham.mp3',            N'Cô Thắm không về, cô Thắm không về...'),
--- Album 11: Tâm 9 (Mỹ Tâm)
-(26, N'Hãy Về Đây Bên Anh',           11, 268, '/music/hay_ve_day.mp3',         N'Hãy về đây bên anh, khi chiều nắng tắt...'),
-(27, N'Người Hãy Quên Em Đi',          11, 245, '/music/nguoi_hay_quen.mp3',     N'Người hãy quên em đi...'),
--- Album 12: Xin Lỗi (Đông Nhi)
-(28, N'Xin Lỗi Anh Quá Phiền',       12, 222, '/music/xin_loi_anh.mp3',        N'Xin lỗi anh quá phiền...'),
-(29, N'Badboy',                          12, 198, '/music/badboy.mp3',             N'You are my bad boy...'),
--- Album 13: Chạm Khẽ (Noo Phước Thịnh)
-(30, N'Chạm Khẽ Tim Anh Một Chút Thôi', 13, 275, '/music/cham_khe_tim.mp3',    N'Chạm khẽ tim anh một chút thôi...'),
-(31, N'Cause I Love You',                13, 253, '/music/cause_i_love_you.mp3',  N'Cause I love you...'),
--- Album 14: Trên Tình Bạn (MIN)
-(32, N'Trên Tình Bạn Dưới Tình Yêu',  14, 237, '/music/tren_tinh_ban.mp3',     N'Trên tình bạn dưới tình yêu...'),
-(33, N'Cứ Chill Thôi',                  14, 288, '/music/cu_chill_thoi.mp3',      N'Cứ chill thôi mà, bình yên thôi mà...'),
--- Album 15: Lạ Lùng (Vũ.)
-(34, N'Lạ Lùng',                        15, 302, '/music/la_lung.mp3',            N'Lạ lùng cứ thế cuốn em...'),
-(35, N'Đông',                            15, 265, '/music/dong_vu.mp3',            N'Mùa đông không lạnh bằng...'),
--- Album 16: Map of the Soul (BTS)
-(36, N'Dynamite',                         16, 199, '/music/dynamite.mp3',           N'Cause I I I''m in the stars tonight...'),
-(37, N'Butter',                           16, 188, '/music/butter.mp3',             N'Smooth like butter...'),
--- Album 17: 24K Magic (Bruno Mars)
-(38, N'24K Magic',                        17, 226, '/music/24k_magic.mp3',          N'24 karat magic in the air...'),
-(39, N'Just The Way You Are',             17, 238, '/music/just_the_way.mp3',       N'Oh her eyes, her eyes...'),
--- Album 18: 30 (Adele)
-(40, N'Rolling in the Deep',              18, 228, '/music/rolling_deep.mp3',       N'There''s a fire starting in my heart...'),
-(41, N'Someone Like You',                 18, 285, '/music/someone_like_you.mp3',   N'I heard that you''re settled down...'),
--- Album 19: Có Chàng Trai (Phan Mạnh Quỳnh)
-(42, N'Có Chàng Trai Viết Lên Cây',    19, 312, '/music/co_chang_trai.mp3',      N'Có chàng trai viết lên cây...'),
-(43, N'Nước Ngoài',                      19, 258, '/music/nuoc_ngoai.mp3',         N'Nước ngoài có gì vui...'),
--- Album 20: Big Girls Don't Cry (Tóc Tiên)
-(44, N'Big Girls Don''t Cry',            20, 241, '/music/big_girls.mp3',          N'Big girls don''t cry...'),
-(45, N'Em Đây Chẳng Phải Thúy Kiều',  20, 218, '/music/em_day_chang.mp3',       N'Em đây chẳng phải Thúy Kiều...');
+(1, N'Lạc Trôi', 1, 280, '/music/lac_troi.mp3', N'Lạc trôi giữa dòng đời vô định...'),
+(2, N'Nơi Này Có Anh', 1, 300, '/music/noi_nay_co_anh.mp3', N'Nơi này có anh, ngàn hoa bay theo gió...'),
+(6, N'Nắng Ấm Xa Dần', 1, 250, '/music/nang_am_xa_dan.mp3', N'Nắng ấm nay đã xa dần...'),
+(3, N'Chạy Ngay Đi', 2, 265, '/music/chay_ngay_di.mp3', N'Chạy ngay đi, chạy ngay đi...'),
+(4, N'Hãy Trao Cho Anh', 2, 310, '/music/hay_trao_cho_anh.mp3', N'Give it to me, hãy trao cho anh...'),
+(5, N'Muộn Rồi Mà Sao Còn', 2, 295, '/music/muon_roi.mp3', N'Muộn rồi mà sao còn mong...'),
+(24, N'Waiting For You', 2, 220, '/music/waiting_for_you.mp3', N'Waiting for you, em ơi...'),
+(7, N'Bài Này Chill Phết', 3, 275, '/music/bai_nay_chill.mp3', N'Bài này chill phết, nghe đi rồi biết...'),
+(8, N'Đưa Nhau Đi Trốn', 3, 260, '/music/dua_nhau_di_tron.mp3', N'Đưa nhau đi trốn khỏi thế gian...'),
+(23, N'Nắng Có Mang Em Về', 3, 290, '/music/nang_co_mang.mp3', N'Nắng có mang em về nơi đó...'),
+(9, N'How You Like That', 4, 190, '/music/hylt.mp3', N'How you like that, how you like that...'),
+(10, N'Lovesick Girls', 4, 210, '/music/lovesick_girls.mp3', N'We are lovesick girls...'),
+(19, N'Lover', 5, 221, '/music/lover.mp3', N'We could leave the Christmas lights up...'),
+(20, N'Shake It Off', 5, 242, '/music/shake_it_off.mp3', N'Cause the players gonna play play play...'),
+(17, N'Shape of You', 6, 234, '/music/shape_of_you.mp3', N'The club isn''t the best place to find a lover...'),
+(18, N'Perfect', 6, 263, '/music/perfect.mp3', N'I found a love for me...'),
+(11, N'Đi Đu Đưa Đi', 7, 205, '/music/di_du_dua_di.mp3', N'Đi đu đưa đi, đi đu đưa đi...'),
+(12, N'Bùa Yêu', 7, 240, '/music/bua_yeu.mp3', N'Bùa yêu bùa yêu...'),
+(13, N'Có Không Giữ Mất Đừng Tìm', 8, 230, '/music/co_khong_giu.mp3', N'Có không giữ, mất đừng tìm...'),
+(14, N'Sáng Mắt Chưa', 8, 215, '/music/sang_mat_chua.mp3', N'Sáng mắt chưa, sáng mắt chưa...'),
+(15, N'Rời Bỏ', 9, 285, '/music/roi_bo.mp3', N'Rời bỏ, em rời bỏ...'),
+(16, N'Không Thể Cùng Nhau Suốt Kiếp', 9, 270, '/music/khong_the.mp3', N'Không thể cùng nhau suốt kiếp...'),
+(21, N'Hồng Nhan', 10, 255, '/music/hong_nhan.mp3', N'Hồng nhan bạc phận...'),
+(22, N'Sóng Gió', 10, 248, '/music/song_gio.mp3', N'Sóng gió cuộc đời...'),
+(25, N'Cô Thắm Không Về', 10, 235, '/music/co_tham.mp3', N'Cô Thắm không về, cô Thắm không về...'),
+(26, N'Hãy Về Đây Bên Anh', 11, 268, '/music/hay_ve_day.mp3', N'Hãy về đây bên anh, khi chiều nắng tắt...'),
+(27, N'Người Hãy Quên Em Đi', 11, 245, '/music/nguoi_hay_quen.mp3', N'Người hãy quên em đi...'),
+(28, N'Xin Lỗi Anh Quá Phiền', 12, 222, '/music/xin_loi_anh.mp3', N'Xin lỗi anh quá phiền...'),
+(29, N'Badboy', 12, 198, '/music/badboy.mp3', N'You are my bad boy...'),
+(30, N'Chạm Khẽ Tim Anh Một Chút Thôi', 13, 275, '/music/cham_khe_tim.mp3', N'Chạm khẽ tim anh một chút thôi...'),
+(31, N'Cause I Love You', 13, 253, '/music/cause_i_love_you.mp3', N'Cause I love you...'),
+(32, N'Trên Tình Bạn Dưới Tình Yêu', 14, 237, '/music/tren_tinh_ban.mp3', N'Trên tình bạn dưới tình yêu...'),
+(33, N'Cứ Chill Thôi', 14, 288, '/music/cu_chill_thoi.mp3', N'Cứ chill thôi mà, bình yên thôi mà...'),
+(34, N'Lạ Lùng', 15, 302, '/music/la_lung.mp3', N'Lạ lùng cứ thế cuốn em...'),
+(35, N'Đông', 15, 265, '/music/dong_vu.mp3', N'Mùa đông không lạnh bằng...'),
+(36, N'Dynamite', 16, 199, '/music/dynamite.mp3', N'Cause I I I''m in the stars tonight...'),
+(37, N'Butter', 16, 188, '/music/butter.mp3', N'Smooth like butter...'),
+(38, N'24K Magic', 17, 226, '/music/24k_magic.mp3', N'24 karat magic in the air...'),
+(39, N'Just The Way You Are', 17, 238, '/music/just_the_way.mp3', N'Oh her eyes, her eyes...'),
+(40, N'Rolling in the Deep', 18, 228, '/music/rolling_deep.mp3', N'There''s a fire starting in my heart...'),
+(41, N'Someone Like You', 18, 285, '/music/someone_like_you.mp3', N'I heard that you''re settled down...'),
+(42, N'Có Chàng Trai Viết Lên Cây', 19, 312, '/music/co_chang_trai.mp3', N'Có chàng trai viết lên cây...'),
+(43, N'Nước Ngoài', 19, 258, '/music/nuoc_ngoai.mp3', N'Nước ngoài có gì vui...'),
+(44, N'Big Girls Don''t Cry', 20, 241, '/music/big_girls.mp3', N'Big girls don''t cry...'),
+(45, N'Em Đây Chẳng Phải Thúy Kiều', 20, 218, '/music/em_day_chang.mp3', N'Em đây chẳng phải Thúy Kiều...');
 SET IDENTITY_INSERT SONGS OFF;
 GO
-
--- 9. SONG_ARTISTS (55 rows)
--- Collabs (2+ artists): songs 4,15,22,23,24,25,33,45 -> Q20,Q21
 INSERT INTO SONG_ARTISTS (song_id, artist_id, role) VALUES
--- Sơn Tùng M-TP (artist 1): 7 songs
-(1,  1, 'main'),
-(2,  1, 'main'),
-(3,  1, 'main'),
-(4,  1, 'main'),     (4,  10, 'featured'),   -- ft. Karik
-(5,  1, 'main'),
-(6,  1, 'main'),
-(24, 1, 'main'),     (24, 10, 'featured'),   -- ft. Karik
--- Đen Vâu (artist 2): 3 songs + collabs
-(7,  2, 'main'),
-(8,  2, 'main'),
-(23, 2, 'main'),     (23, 3,  'featured'),   -- ft. Hòa Minzy
--- BLACKPINK (artist 4)
-(9,  4, 'main'),
+(1, 1, 'main'),
+(2, 1, 'main'),
+(3, 1, 'main'),
+(4, 1, 'main'), (4, 10, 'featured'),
+(5, 1, 'main'),
+(6, 1, 'main'),
+(24, 1, 'main'), (24, 10, 'featured'),
+(7, 2, 'main'),
+(8, 2, 'main'),
+(23, 2, 'main'), (23, 3, 'featured'),
+(9, 4, 'main'),
 (10, 4, 'main'),
--- Trúc Nhân (artist 5)
 (13, 5, 'main'),
 (14, 5, 'main'),
--- Bích Phương (artist 6)
 (11, 6, 'main'),
 (12, 6, 'main'),
--- Jack (artist 7)
 (21, 7, 'main'),
-(22, 7, 'main'),     (22, 10, 'featured'),   -- ft. Karik
-(25, 7, 'main'),     (25, 2,  'featured'),   -- ft. Đen Vâu
--- Taylor Swift (artist 8)
+(22, 7, 'main'), (22, 10, 'featured'),
+(25, 7, 'main'), (25, 2, 'featured'),
 (19, 8, 'main'),
 (20, 8, 'main'),
--- Ed Sheeran (artist 9)
 (17, 9, 'main'),
 (18, 9, 'main'),
--- Hòa Minzy (artist 3): song 15 ft. Trúc Nhân -> Q9
-(15, 3, 'main'),     (15, 5,  'featured'),
+(15, 3, 'main'), (15, 5, 'featured'),
 (16, 3, 'main'),
--- Mỹ Tâm (artist 11)
 (26, 11, 'main'),
 (27, 11, 'main'),
--- Đông Nhi (artist 12)
 (28, 12, 'main'),
 (29, 12, 'main'),
--- Noo Phước Thịnh (artist 13)
 (30, 13, 'main'),
 (31, 13, 'main'),
--- MIN (artist 14)
 (32, 14, 'main'),
-(33, 14, 'main'),    (33, 2,  'featured'),   -- Cứ Chill Thôi ft. Đen Vâu
--- Vũ. (artist 15)
+(33, 14, 'main'), (33, 2, 'featured'),
 (34, 15, 'main'),
 (35, 15, 'main'),
--- BTS (artist 16)
 (36, 16, 'main'),
 (37, 16, 'main'),
--- Bruno Mars (artist 17)
 (38, 17, 'main'),
 (39, 17, 'main'),
--- Adele (artist 18)
 (40, 18, 'main'),
 (41, 18, 'main'),
--- Phan Mạnh Quỳnh (artist 19)
 (42, 19, 'main'),
 (43, 19, 'main'),
--- Tóc Tiên (artist 20)
 (44, 20, 'main'),
-(45, 20, 'main'),    (45, 10, 'featured');   -- ft. Karik
+(45, 20, 'main'), (45, 10, 'featured');
 GO
-
--- 10. GENRES (20 genres)
 SET IDENTITY_INSERT GENRES ON;
 INSERT INTO GENRES (genre_id, genre_name, description) VALUES
-(1,  N'Pop',          N'Nhạc Pop quốc tế'),
-(2,  N'Rock',         N'Nhạc Rock'),
-(3,  N'Vpop',         N'Nhạc Pop Việt Nam'),
-(4,  N'Ballad',       N'Nhạc trữ tình'),
-(5,  N'R&B',          N'Rhythm and Blues'),
-(6,  N'EDM',          N'Electronic Dance Music'),
-(7,  N'Kpop',         N'Nhạc Pop Hàn Quốc'),
-(8,  N'Hip-Hop/Rap',  N'Nhạc Hip-Hop và Rap'),
-(9,  N'Jazz',         N'Nhạc Jazz'),
-(10, N'Classical',     N'Nhạc cổ điển'),
-(11, N'Country',       N'Nhạc Country'),
-(12, N'Indie',         N'Nhạc độc lập'),
-(13, N'Lo-fi',         N'Nhạc Lo-fi thư giãn'),
-(14, N'Latin',         N'Nhạc Latin'),
-(15, N'Reggae',        N'Nhạc Reggae'),
-(16, N'Blues',          N'Nhạc Blues'),
-(17, N'Metal',         N'Nhạc Metal'),
-(18, N'Acoustic',      N'Nhạc Acoustic'),
-(19, N'Soul',          N'Nhạc Soul'),
-(20, N'Funk',          N'Nhạc Funk');
+(1, N'Pop', N'Nhạc Pop quốc tế'),
+(2, N'Rock', N'Nhạc Rock'),
+(3, N'Vpop', N'Nhạc Pop Việt Nam'),
+(4, N'Ballad', N'Nhạc trữ tình'),
+(5, N'R&B', N'Rhythm and Blues'),
+(6, N'EDM', N'Electronic Dance Music'),
+(7, N'Kpop', N'Nhạc Pop Hàn Quốc'),
+(8, N'Hip-Hop/Rap', N'Nhạc Hip-Hop và Rap'),
+(9, N'Jazz', N'Nhạc Jazz'),
+(10, N'Classical', N'Nhạc cổ điển'),
+(11, N'Country', N'Nhạc Country'),
+(12, N'Indie', N'Nhạc độc lập'),
+(13, N'Lo-fi', N'Nhạc Lo-fi thư giãn'),
+(14, N'Latin', N'Nhạc Latin'),
+(15, N'Reggae', N'Nhạc Reggae'),
+(16, N'Blues', N'Nhạc Blues'),
+(17, N'Metal', N'Nhạc Metal'),
+(18, N'Acoustic', N'Nhạc Acoustic'),
+(19, N'Soul', N'Nhạc Soul'),
+(20, N'Funk', N'Nhạc Funk');
 SET IDENTITY_INSERT GENRES OFF;
 GO
-
--- 11. SONG_GENRES (~85 rows)
 INSERT INTO SONG_GENRES (song_id, genre_id) VALUES
--- Original 25 songs
-(1,  3), (1,  1),                -- Lạc Trôi: Vpop, Pop
-(2,  3), (2,  4),                -- Nơi Này Có Anh: Vpop, Ballad
-(3,  3), (3,  6),                -- Chạy Ngay Đi: Vpop, EDM
-(4,  3), (4,  1), (4,  8),      -- Hãy Trao Cho Anh: Vpop, Pop, Hip-Hop/Rap
-(5,  3), (5,  4),                -- Muộn Rồi: Vpop, Ballad
-(6,  3), (6,  1),                -- Nắng Ấm Xa Dần: Vpop, Pop
-(7,  3), (7,  8),                -- Bài Này Chill Phết: Vpop, Hip-Hop/Rap
-(8,  3),                          -- Đưa Nhau Đi Trốn: Vpop
-(9,  7), (9,  1), (9,  6),      -- How You Like That: Kpop, Pop, EDM
-(10, 7), (10, 1),                -- Lovesick Girls: Kpop, Pop
-(11, 3), (11, 1), (11, 6),      -- Đi Đu Đưa Đi: Vpop, Pop, EDM
-(12, 3), (12, 1),                -- Bùa Yêu: Vpop, Pop
-(13, 3), (13, 1),                -- Có Không Giữ: Vpop, Pop
-(14, 3), (14, 1), (14, 6),      -- Sáng Mắt Chưa: Vpop, Pop, EDM
-(15, 3), (15, 4),                -- Rời Bỏ: Vpop, Ballad
-(16, 3), (16, 4),                -- Không Thể: Vpop, Ballad
-(17, 1),                          -- Shape of You: Pop
-(18, 1), (18, 4),                -- Perfect: Pop, Ballad
-(19, 1),                          -- Lover: Pop
-(20, 1),                          -- Shake It Off: Pop
-(21, 3), (21, 4),                -- Hồng Nhan: Vpop, Ballad
-(22, 3), (22, 8),                -- Sóng Gió: Vpop, Hip-Hop/Rap
-(23, 3), (23, 4),                -- Nắng Có Mang Em Về: Vpop, Ballad
-(24, 3), (24, 8),                -- Waiting For You: Vpop, Hip-Hop/Rap
-(25, 3),                          -- Cô Thắm: Vpop
--- New 20 songs (26-45)
-(26, 3), (26, 4),                -- Hãy Về Đây Bên Anh: Vpop, Ballad
-(27, 3), (27, 1),                -- Người Hãy Quên Em Đi: Vpop, Pop
-(28, 3), (28, 1), (28, 6),      -- Xin Lỗi Anh: Vpop, Pop, EDM
-(29, 3), (29, 1),                -- Badboy: Vpop, Pop
-(30, 3), (30, 1),                -- Chạm Khẽ Tim Anh: Vpop, Pop
-(31, 3), (31, 4),                -- Cause I Love You: Vpop, Ballad
-(32, 3), (32, 1),                -- Trên Tình Bạn: Vpop, Pop
-(33, 3), (33, 8), (33, 13),     -- Cứ Chill Thôi: Vpop, Hip-Hop/Rap, Lo-fi
-(34, 3), (34, 12), (34, 18),    -- Lạ Lùng: Vpop, Indie, Acoustic
-(35, 3), (35, 12),               -- Đông: Vpop, Indie
-(36, 7), (36, 1),                -- Dynamite: Kpop, Pop
-(37, 7), (37, 1), (37, 20),     -- Butter: Kpop, Pop, Funk
-(38, 1), (38, 20), (38, 5),     -- 24K Magic: Pop, Funk, R&B
-(39, 1), (39, 5),                -- Just The Way You Are: Pop, R&B
-(40, 1), (40, 19),               -- Rolling in the Deep: Pop, Soul
-(41, 1), (41, 4),                -- Someone Like You: Pop, Ballad
-(42, 3), (42, 4), (42, 18),     -- Có Chàng Trai: Vpop, Ballad, Acoustic
-(43, 3), (43, 1),                -- Nước Ngoài: Vpop, Pop
-(44, 3), (44, 1), (44, 6),      -- Big Girls Don't Cry: Vpop, Pop, EDM
-(45, 3), (45, 8);                -- Em Đây Chẳng Phải: Vpop, Hip-Hop/Rap
+(1, 3), (1, 1),
+(2, 3), (2, 4),
+(3, 3), (3, 6),
+(4, 3), (4, 1), (4, 8),
+(5, 3), (5, 4),
+(6, 3), (6, 1),
+(7, 3), (7, 8),
+(8, 3),
+(9, 7), (9, 1), (9, 6),
+(10, 7), (10, 1),
+(11, 3), (11, 1), (11, 6),
+(12, 3), (12, 1),
+(13, 3), (13, 1),
+(14, 3), (14, 1), (14, 6),
+(15, 3), (15, 4),
+(16, 3), (16, 4),
+(17, 1),
+(18, 1), (18, 4),
+(19, 1),
+(20, 1),
+(21, 3), (21, 4),
+(22, 3), (22, 8),
+(23, 3), (23, 4),
+(24, 3), (24, 8),
+(25, 3),
+(26, 3), (26, 4),
+(27, 3), (27, 1),
+(28, 3), (28, 1), (28, 6),
+(29, 3), (29, 1),
+(30, 3), (30, 1),
+(31, 3), (31, 4),
+(32, 3), (32, 1),
+(33, 3), (33, 8), (33, 13),
+(34, 3), (34, 12), (34, 18),
+(35, 3), (35, 12),
+(36, 7), (36, 1),
+(37, 7), (37, 1), (37, 20),
+(38, 1), (38, 20), (38, 5),
+(39, 1), (39, 5),
+(40, 1), (40, 19),
+(41, 1), (41, 4),
+(42, 3), (42, 4), (42, 18),
+(43, 3), (43, 1),
+(44, 3), (44, 1), (44, 6),
+(45, 3), (45, 8);
 GO
-
--- 12. PLAYLISTS (20 playlists)
 SET IDENTITY_INSERT PLAYLISTS ON;
 INSERT INTO PLAYLISTS (playlist_id, user_id, name, description, is_public, created_at) VALUES
-(1,  1,  N'Nhạc Chill Cuối Tuần',    N'Danh sách nhạc thư giãn cuối tuần',        1, '2026-01-15 10:00:00'),
-(2,  2,  N'Vpop Hay Nhất 2026',       N'Tổng hợp nhạc Vpop hay nhất',              1, '2026-02-01 11:00:00'),
-(3,  4,  N'Nhạc Của Tui',             N'Playlist cá nhân yêu thích',                1, '2026-02-10 12:00:00'),
-(4,  4,  N'Nhạc Buồn Đêm Khuya',    N'Những bài hát buồn nghe đêm khuya',        0, '2026-02-15 13:00:00'),
-(5,  5,  N'Party Mix',                 N'Nhạc sôi động cho party',                   1, '2026-03-01 14:00:00'),
-(6,  3,  N'Morning Vibes',             N'Nhạc nhẹ nhàng buổi sáng',                 1, '2026-03-05 15:00:00'),
-(7,  11, N'Tình Khúc Bất Hủ',        N'Những bài hát tình cảm kinh điển',          1, '2026-01-20 08:00:00'),
-(8,  12, N'Workout Playlist',          N'Nhạc tập gym sôi động',                     1, '2026-02-05 09:00:00'),
-(9,  13, N'Indie Việt',                N'Nhạc Indie Việt Nam hay nhất',              1, '2026-02-12 10:00:00'),
-(10, 14, N'Kpop Favorites',            N'Tuyển tập Kpop yêu thích',                  1, '2026-02-20 11:00:00'),
-(11, 15, N'Study Time',                N'Nhạc nghe khi học bài',                      1, '2026-03-01 12:00:00'),
-(12, 16, N'Road Trip',                 N'Nhạc cho chuyến đi xa',                     1, '2026-03-03 13:00:00'),
-(13, 17, N'Ballad Việt',              N'Tuyển tập Ballad hay nhất',                  1, '2026-03-06 14:00:00'),
-(14, 18, N'US-UK Hits',                N'Nhạc US-UK hay nhất 2026',                  1, '2026-03-08 15:00:00'),
-(15, 19, N'Top Rap Việt',             N'Nhạc Rap Việt Nam hay nhất',                 1, '2026-03-10 16:00:00'),
-(16, 20, N'Nhạc Trẻ Hot',            N'Nhạc trẻ thịnh hành nhất',                   1, '2026-03-12 17:00:00'),
-(17, 1,  N'My Favorites',              N'Bài hát yêu thích nhất của tui',            0, '2026-01-10 08:00:00'),
-(18, 8,  N'EDM Night',                 N'Nhạc EDM cho đêm dài',                      1, '2026-02-18 19:00:00'),
-(19, 9,  N'Acoustic Corner',           N'Nhạc Acoustic nhẹ nhàng',                   0, '2026-03-02 20:00:00'),
-(20, 10, N'Throwback Hits',            N'Nhạc cũ nghe lại vẫn hay',                  1, '2026-03-05 21:00:00');
+(1, 1, N'Nhạc Chill Cuối Tuần', N'Danh sách nhạc thư giãn cuối tuần', 1, '2026-01-15 10:00:00'),
+(2, 2, N'Vpop Hay Nhất 2026', N'Tổng hợp nhạc Vpop hay nhất', 1, '2026-02-01 11:00:00'),
+(3, 4, N'Nhạc Của Tui', N'Playlist cá nhân yêu thích', 1, '2026-02-10 12:00:00'),
+(4, 4, N'Nhạc Buồn Đêm Khuya', N'Những bài hát buồn nghe đêm khuya', 0, '2026-02-15 13:00:00'),
+(5, 5, N'Party Mix', N'Nhạc sôi động cho party', 1, '2026-03-01 14:00:00'),
+(6, 3, N'Morning Vibes', N'Nhạc nhẹ nhàng buổi sáng', 1, '2026-03-05 15:00:00'),
+(7, 11, N'Tình Khúc Bất Hủ', N'Những bài hát tình cảm kinh điển', 1, '2026-01-20 08:00:00'),
+(8, 12, N'Workout Playlist', N'Nhạc tập gym sôi động', 1, '2026-02-05 09:00:00'),
+(9, 13, N'Indie Việt', N'Nhạc Indie Việt Nam hay nhất', 1, '2026-02-12 10:00:00'),
+(10, 14, N'Kpop Favorites', N'Tuyển tập Kpop yêu thích', 1, '2026-02-20 11:00:00'),
+(11, 15, N'Study Time', N'Nhạc nghe khi học bài', 1, '2026-03-01 12:00:00'),
+(12, 16, N'Road Trip', N'Nhạc cho chuyến đi xa', 1, '2026-03-03 13:00:00'),
+(13, 17, N'Ballad Việt', N'Tuyển tập Ballad hay nhất', 1, '2026-03-06 14:00:00'),
+(14, 18, N'US-UK Hits', N'Nhạc US-UK hay nhất 2026', 1, '2026-03-08 15:00:00'),
+(15, 19, N'Top Rap Việt', N'Nhạc Rap Việt Nam hay nhất', 1, '2026-03-10 16:00:00'),
+(16, 20, N'Nhạc Trẻ Hot', N'Nhạc trẻ thịnh hành nhất', 1, '2026-03-12 17:00:00'),
+(17, 1, N'My Favorites', N'Bài hát yêu thích nhất của tui', 0, '2026-01-10 08:00:00'),
+(18, 8, N'EDM Night', N'Nhạc EDM cho đêm dài', 1, '2026-02-18 19:00:00'),
+(19, 9, N'Acoustic Corner', N'Nhạc Acoustic nhẹ nhàng', 0, '2026-03-02 20:00:00'),
+(20, 10, N'Throwback Hits', N'Nhạc cũ nghe lại vẫn hay', 1, '2026-03-05 21:00:00');
 SET IDENTITY_INSERT PLAYLISTS OFF;
 GO
-
--- 13. PLAYLIST_SONGS (60 rows)
--- playlist_id=1 does NOT contain song_id=10 initially (Q33 adds it, Q37 removes it)
 INSERT INTO PLAYLIST_SONGS (playlist_id, song_id, position) VALUES
--- Playlist 1: Nhạc Chill (user_1)
-(1, 7,  1), (1, 8,  2), (1, 23, 3), (1, 2,  4), (1, 18, 5),
--- Playlist 2: Vpop Hay Nhất (user_2)
-(2, 1,  1), (2, 3,  2), (2, 4,  3), (2, 6,  4), (2, 12, 5),
--- Playlist 3: Nhạc Của Tui (user_4)
-(3, 9,  1), (3, 10, 2), (3, 17, 3), (3, 20, 4),
--- Playlist 4: Nhạc Buồn (user_4, private)
-(4, 2,  1), (4, 5,  2), (4, 15, 3), (4, 16, 4), (4, 41, 5),
--- Playlist 5: Party Mix (user_5)
-(5, 3,  1), (5, 9,  2), (5, 11, 3), (5, 14, 4), (5, 17, 5),
--- Playlist 6: Morning Vibes (user_3)
+(1, 7, 1), (1, 8, 2), (1, 23, 3), (1, 2, 4), (1, 18, 5),
+(2, 1, 1), (2, 3, 2), (2, 4, 3), (2, 6, 4), (2, 12, 5),
+(3, 9, 1), (3, 10, 2), (3, 17, 3), (3, 20, 4),
+(4, 2, 1), (4, 5, 2), (4, 15, 3), (4, 16, 4), (4, 41, 5),
+(5, 3, 1), (5, 9, 2), (5, 11, 3), (5, 14, 4), (5, 17, 5),
 (6, 18, 1), (6, 19, 2), (6, 23, 3), (6, 34, 4),
--- Playlist 7: Tình Khúc (user_9)
 (7, 26, 1), (7, 27, 2), (7, 31, 3), (7, 42, 4), (7, 15, 5),
--- Playlist 8: Workout (user_10)
-(8, 36, 1), (8, 37, 2), (8, 38, 3), (8, 9,  4), (8, 3,  5),
--- Playlist 9: Indie Việt (user_11)
-(9, 34, 1), (9, 35, 2), (9, 7,  3),
--- Playlist 10: Kpop Favorites (user_12)
-(10, 9,  1), (10, 10, 2), (10, 36, 3), (10, 37, 4),
--- Playlist 11: Study Time (user_13)
+(8, 36, 1), (8, 37, 2), (8, 38, 3), (8, 9, 4), (8, 3, 5),
+(9, 34, 1), (9, 35, 2), (9, 7, 3),
+(10, 9, 1), (10, 10, 2), (10, 36, 3), (10, 37, 4),
 (11, 18, 1), (11, 34, 2), (11, 35, 3), (11, 42, 4),
--- Playlist 12: Road Trip (user_14)
-(12, 1,  1), (12, 4,  2), (12, 38, 3), (12, 39, 4), (12, 44, 5),
--- Playlist 13: Ballad Việt (user_15)
-(13, 2,  1), (13, 5,  2), (13, 15, 3), (13, 26, 4), (13, 31, 5),
--- Playlist 14: US-UK Hits (user_16)
+(12, 1, 1), (12, 4, 2), (12, 38, 3), (12, 39, 4), (12, 44, 5),
+(13, 2, 1), (13, 5, 2), (13, 15, 3), (13, 26, 4), (13, 31, 5),
 (14, 17, 1), (14, 19, 2), (14, 20, 3), (14, 40, 4), (14, 41, 5),
--- Playlist 15: Top Rap Việt (user_17)
-(15, 7,  1), (15, 22, 2), (15, 24, 3), (15, 33, 4),
--- Playlist 16: Nhạc Trẻ (user_18)
+(15, 7, 1), (15, 22, 2), (15, 24, 3), (15, 33, 4),
 (16, 28, 1), (16, 29, 2), (16, 30, 3), (16, 43, 4), (16, 44, 5);
 GO
-
--- 14. SONG_COMMENTS (35 rows)
--- user_1 is top commenter (11 comments) -> Q17
 SET IDENTITY_INSERT SONG_COMMENTS ON;
 INSERT INTO SONG_COMMENTS (comment_id, user_id, song_id, comment_text, timestamp_position, created_at) VALUES
--- Song 6 (Nắng Ấm Xa Dần) - 6 comments -> Q12
-(1,  1,  6,  N'Bài hát hay quá! Nghe hoài không chán',              30,  '2026-03-01 10:00:00'),
-(2,  2,  6,  N'Giai điệu tuyệt vời, rất cảm xúc',                  60,  '2026-03-02 11:00:00'),
-(3,  3,  6,  N'Nghe đi nghe lại vẫn thấy hay',                      90,  '2026-03-03 12:00:00'),
-(4,  4,  6,  N'Nắng ấm xa dần, lòng buồn man mác',                 120, '2026-03-04 09:00:00'),
-(5,  5,  6,  N'Sơn Tùng hát hay lắm!',                              150, '2026-03-05 14:00:00'),
-(6,  1,  6,  N'Replay lần thứ 100 rồi nè',                          45,  '2026-03-06 16:00:00'),
-
--- Song 20 (Shake It Off) - 4 comments -> Q11
-(7,  1,  20, N'Taylor Swift is the best!',                            50,  '2026-03-10 08:00:00'),
-(8,  2,  20, N'Great song! Can''t stop listening',                    100, '2026-03-11 09:00:00'),
-(9,  3,  20, N'Can''t stop dancing to this',                          80,  '2026-03-12 10:00:00'),
-(10, 5,  20, N'Love this track so much!',                             120, '2026-03-13 11:00:00'),
-
--- Comments by user_1 on other songs -> Q13
-(11, 1,  1,  N'Lạc trôi nghe phê quá!',                              60,  '2026-03-05 10:00:00'),
-(12, 1,  3,  N'Chạy ngay đi - beat cực đỉnh!',                      30,  '2026-03-06 11:00:00'),
-(13, 1,  15, N'Rời bỏ - bài hát buồn nhất của Hòa Minzy',          100, '2026-03-07 12:00:00'),
-(20, 1,  17, N'Shape of You cực hay, Ed Sheeran quá tài!',          60,  '2026-03-14 19:00:00'),
-
--- More comments on various songs
-(14, 2,  15, N'Hòa Minzy hát quá xuất sắc luôn',                    50,  '2026-03-08 13:00:00'),
-(15, 4,  15, N'Bài hát cảm xúc nhất mình từng nghe',               120, '2026-03-09 14:00:00'),
-(16, 3,  1,  N'Classic Sơn Tùng! Không bao giờ lỗi thời',          40,  '2026-03-10 15:00:00'),
-(17, 5,  7,  N'Đen Vâu flow quá đỉnh',                              70,  '2026-03-11 16:00:00'),
-(18, 2,  9,  N'BLACKPINK in your area!',                              30,  '2026-03-12 17:00:00'),
-(19, 4,  12, N'Bùa yêu - Bích Phương hay lắm nha!',                90,  '2026-03-13 18:00:00'),
-
--- NEW: more comments on new songs (by various users including new ones)
-(21, 11, 26, N'Mỹ Tâm luôn là diva số 1!',                          40,  '2026-03-01 09:00:00'),
-(22, 12, 28, N'Đông Nhi dễ thương quá',                              55,  '2026-03-02 10:00:00'),
-(23, 13, 30, N'Chạm khẽ tim anh - quá đỉnh!',                      80,  '2026-03-03 11:00:00'),
-(24, 14, 34, N'Indie vibes cực chill',                                65,  '2026-03-04 12:00:00'),
-(25, 15, 36, N'Dynamite cực hay!',                                    45,  '2026-03-05 13:00:00'),
-(26, 16, 38, N'Bruno Mars quá đỉnh luôn!',                           50,  '2026-03-06 14:00:00'),
-(27, 17, 40, N'Rolling in the Deep - kinh điển',                      70,  '2026-03-07 15:00:00'),
-(28, 18, 42, N'Phan Mạnh Quỳnh viết nhạc hay quá trời',            90,  '2026-03-08 16:00:00'),
-(29, 1,  33, N'Cứ chill thôi mà, bình yên thôi mà!',               110, '2026-03-09 17:00:00'),
-(30, 1,  36, N'BTS Dynamite nghe là muốn nhảy!',                     30,  '2026-03-10 18:00:00'),
-(31, 19, 22, N'Sóng gió Jack ft. Karik hay lắm!',                   60,  '2026-03-11 19:00:00'),
-(32, 20, 44, N'Tóc Tiên quá slay!',                                  45,  '2026-03-12 20:00:00'),
-(33, 2,  41, N'Someone Like You nghe là khóc',                        80,  '2026-03-13 21:00:00'),
-(34, 3,  39, N'Just The Way You Are cực lãng mạn',                   50,  '2026-03-14 22:00:00'),
-
--- comment_id=100 by user_id=5 on song 20 -> Q38
-(100, 5, 20, N'Comment này sẽ bị xóa bởi admin hoặc chủ sở hữu',   30,  '2026-03-15 20:00:00');
+(1, 1, 6, N'Bài hát hay quá! Nghe hoài không chán', 30, '2026-03-01 10:00:00'),
+(2, 2, 6, N'Giai điệu tuyệt vời, rất cảm xúc', 60, '2026-03-02 11:00:00'),
+(3, 3, 6, N'Nghe đi nghe lại vẫn thấy hay', 90, '2026-03-03 12:00:00'),
+(4, 4, 6, N'Nắng ấm xa dần, lòng buồn man mác', 120, '2026-03-04 09:00:00'),
+(5, 5, 6, N'Sơn Tùng hát hay lắm!', 150, '2026-03-05 14:00:00'),
+(6, 1, 6, N'Replay lần thứ 100 rồi nè', 45, '2026-03-06 16:00:00'),
+(7, 1, 20, N'Taylor Swift is the best!', 50, '2026-03-10 08:00:00'),
+(8, 2, 20, N'Great song! Can''t stop listening', 100, '2026-03-11 09:00:00'),
+(9, 3, 20, N'Can''t stop dancing to this', 80, '2026-03-12 10:00:00'),
+(10, 5, 20, N'Love this track so much!', 120, '2026-03-13 11:00:00'),
+(11, 1, 1, N'Lạc trôi nghe phê quá!', 60, '2026-03-05 10:00:00'),
+(12, 1, 3, N'Chạy ngay đi - beat cực đỉnh!', 30, '2026-03-06 11:00:00'),
+(13, 1, 15, N'Rời bỏ - bài hát buồn nhất của Hòa Minzy', 100, '2026-03-07 12:00:00'),
+(20, 1, 17, N'Shape of You cực hay, Ed Sheeran quá tài!', 60, '2026-03-14 19:00:00'),
+(14, 2, 15, N'Hòa Minzy hát quá xuất sắc luôn', 50, '2026-03-08 13:00:00'),
+(15, 4, 15, N'Bài hát cảm xúc nhất mình từng nghe', 120, '2026-03-09 14:00:00'),
+(16, 3, 1, N'Classic Sơn Tùng! Không bao giờ lỗi thời', 40, '2026-03-10 15:00:00'),
+(17, 5, 7, N'Đen Vâu flow quá đỉnh', 70, '2026-03-11 16:00:00'),
+(18, 2, 9, N'BLACKPINK in your area!', 30, '2026-03-12 17:00:00'),
+(19, 4, 12, N'Bùa yêu - Bích Phương hay lắm nha!', 90, '2026-03-13 18:00:00'),
+(21, 11, 26, N'Mỹ Tâm luôn là diva số 1!', 40, '2026-03-01 09:00:00'),
+(22, 12, 28, N'Đông Nhi dễ thương quá', 55, '2026-03-02 10:00:00'),
+(23, 13, 30, N'Chạm khẽ tim anh - quá đỉnh!', 80, '2026-03-03 11:00:00'),
+(24, 14, 34, N'Indie vibes cực chill', 65, '2026-03-04 12:00:00'),
+(25, 15, 36, N'Dynamite cực hay!', 45, '2026-03-05 13:00:00'),
+(26, 16, 38, N'Bruno Mars quá đỉnh luôn!', 50, '2026-03-06 14:00:00'),
+(27, 17, 40, N'Rolling in the Deep - kinh điển', 70, '2026-03-07 15:00:00'),
+(28, 18, 42, N'Phan Mạnh Quỳnh viết nhạc hay quá trời', 90, '2026-03-08 16:00:00'),
+(29, 1, 33, N'Cứ chill thôi mà, bình yên thôi mà!', 110, '2026-03-09 17:00:00'),
+(30, 1, 36, N'BTS Dynamite nghe là muốn nhảy!', 30, '2026-03-10 18:00:00'),
+(31, 19, 22, N'Sóng gió Jack ft. Karik hay lắm!', 60, '2026-03-11 19:00:00'),
+(32, 20, 44, N'Tóc Tiên quá slay!', 45, '2026-03-12 20:00:00'),
+(33, 2, 41, N'Someone Like You nghe là khóc', 80, '2026-03-13 21:00:00'),
+(34, 3, 39, N'Just The Way You Are cực lãng mạn', 50, '2026-03-14 22:00:00'),
+(100, 5, 20, N'Comment này sẽ bị xóa bởi admin hoặc chủ sở hữu', 30, '2026-03-15 20:00:00');
 SET IDENTITY_INSERT SONG_COMMENTS OFF;
 GO
-
--- 15. COMMENT_LIKES (35 rows)
 INSERT INTO COMMENT_LIKES (user_id, comment_id, liked_at) VALUES
--- Likes on song 6 comments -> Q12, Q14 (use @song_id=6)
-(2,  1,  '2026-03-02 12:00:00'),   -- comment 1 (user_1): 4 likes
-(3,  1,  '2026-03-03 12:00:00'),
-(4,  1,  '2026-03-04 12:00:00'),
-(5,  1,  '2026-03-05 12:00:00'),
-(1,  2,  '2026-03-03 12:00:00'),   -- comment 2 (user_2): 3 likes
-(4,  2,  '2026-03-04 12:00:00'),
-(5,  2,  '2026-03-05 12:00:00'),
-(1,  3,  '2026-03-04 12:00:00'),   -- comment 3 (user_3): 2 likes
-(2,  3,  '2026-03-05 12:00:00'),
-(1,  4,  '2026-03-05 12:00:00'),   -- comment 4 (user_4): 1 like
-(3,  5,  '2026-03-06 12:00:00'),   -- comment 5 (user_5): 2 likes
-(1,  5,  '2026-03-07 12:00:00'),
-(2,  6,  '2026-03-07 12:00:00'),   -- comment 6 (user_1): 1 like
--- Likes on other comments
-(2,  7,  '2026-03-11 12:00:00'),
-(3,  7,  '2026-03-12 12:00:00'),
-(5,  8,  '2026-03-12 12:00:00'),
-(1,  9,  '2026-03-13 12:00:00'),
-(4,  11, '2026-03-06 12:00:00'),
-(5,  11, '2026-03-07 12:00:00'),
-(3,  12, '2026-03-07 12:00:00'),
-(2,  13, '2026-03-08 12:00:00'),
-(1,  14, '2026-03-09 12:00:00'),
--- Likes on new comments
+(2, 1, '2026-03-02 12:00:00'),
+(3, 1, '2026-03-03 12:00:00'),
+(4, 1, '2026-03-04 12:00:00'),
+(5, 1, '2026-03-05 12:00:00'),
+(1, 2, '2026-03-03 12:00:00'),
+(4, 2, '2026-03-04 12:00:00'),
+(5, 2, '2026-03-05 12:00:00'),
+(1, 3, '2026-03-04 12:00:00'),
+(2, 3, '2026-03-05 12:00:00'),
+(1, 4, '2026-03-05 12:00:00'),
+(3, 5, '2026-03-06 12:00:00'),
+(1, 5, '2026-03-07 12:00:00'),
+(2, 6, '2026-03-07 12:00:00'),
+(2, 7, '2026-03-11 12:00:00'),
+(3, 7, '2026-03-12 12:00:00'),
+(5, 8, '2026-03-12 12:00:00'),
+(1, 9, '2026-03-13 12:00:00'),
+(4, 11, '2026-03-06 12:00:00'),
+(5, 11, '2026-03-07 12:00:00'),
+(3, 12, '2026-03-07 12:00:00'),
+(2, 13, '2026-03-08 12:00:00'),
+(1, 14, '2026-03-09 12:00:00'),
 (11, 21, '2026-03-02 13:00:00'),
 (12, 22, '2026-03-03 14:00:00'),
-(1,  23, '2026-03-04 15:00:00'),
-(2,  24, '2026-03-05 16:00:00'),
-(3,  25, '2026-03-06 17:00:00'),
-(4,  26, '2026-03-07 18:00:00'),
-(5,  27, '2026-03-08 19:00:00'),
-(1,  28, '2026-03-09 20:00:00'),
+(1, 23, '2026-03-04 15:00:00'),
+(2, 24, '2026-03-05 16:00:00'),
+(3, 25, '2026-03-06 17:00:00'),
+(4, 26, '2026-03-07 18:00:00'),
+(5, 27, '2026-03-08 19:00:00'),
+(1, 28, '2026-03-09 20:00:00'),
 (11, 29, '2026-03-10 21:00:00'),
 (12, 30, '2026-03-11 22:00:00'),
--- Likes on comment 100 -> Q18 (use comment_id=100)
-(3,  100, '2026-03-16 12:00:00'),
-(4,  100, '2026-03-16 13:00:00'),
-(1,  100, '2026-03-16 14:00:00');
+(3, 100, '2026-03-16 12:00:00'),
+(4, 100, '2026-03-16 13:00:00'),
+(1, 100, '2026-03-16 14:00:00');
 GO
-
--- 16. SONG_LIKES (50 rows)
--- user_id=5 likes song_id=20 -> Q39
 INSERT INTO SONG_LIKES (user_id, song_id, liked_at) VALUES
--- Song 1: 5 likes
-(1,  1,  '2026-03-01 10:00:00'),
-(2,  1,  '2026-03-02 10:00:00'),
-(3,  1,  '2026-03-03 10:00:00'),
-(4,  1,  '2026-03-04 10:00:00'),
-(5,  1,  '2026-03-05 10:00:00'),
--- Song 3: 3 likes
-(1,  3,  '2026-03-02 11:00:00'),
-(2,  3,  '2026-03-03 11:00:00'),
-(3,  3,  '2026-03-04 11:00:00'),
--- Song 4: 4 likes
-(1,  4,  '2026-03-03 12:00:00'),
-(2,  4,  '2026-03-04 12:00:00'),
-(3,  4,  '2026-03-05 12:00:00'),
-(4,  4,  '2026-03-06 12:00:00'),
--- Song 6: 3 likes
-(1,  6,  '2026-03-01 14:00:00'),
-(2,  6,  '2026-03-02 14:00:00'),
-(3,  6,  '2026-03-03 14:00:00'),
--- Song 7: 2 likes
-(1,  7,  '2026-03-05 15:00:00'),
-(2,  7,  '2026-03-06 15:00:00'),
--- Song 9: 5 likes
-(1,  9,  '2026-03-07 16:00:00'),
-(2,  9,  '2026-03-08 16:00:00'),
-(3,  9,  '2026-03-09 16:00:00'),
-(4,  9,  '2026-03-10 16:00:00'),
-(5,  9,  '2026-03-11 16:00:00'),
--- Song 12: 2 likes
-(1,  12, '2026-03-08 17:00:00'),
-(3,  12, '2026-03-09 17:00:00'),
--- Song 15: 3 likes
-(1,  15, '2026-03-10 18:00:00'),
-(2,  15, '2026-03-11 18:00:00'),
-(4,  15, '2026-03-12 18:00:00'),
--- Song 17: 3 likes
-(1,  17, '2026-03-11 19:00:00'),
-(2,  17, '2026-03-12 19:00:00'),
-(3,  17, '2026-03-13 19:00:00'),
--- Song 20: 3 likes (incl. user_5 -> Q39)
-(5,  20, '2026-03-12 20:00:00'),
-(1,  20, '2026-03-13 20:00:00'),
-(2,  20, '2026-03-14 20:00:00'),
--- Song 22: 2 likes
-(1,  22, '2026-03-14 21:00:00'),
-(2,  22, '2026-03-15 21:00:00'),
--- NEW: likes on new songs
+(1, 1, '2026-03-01 10:00:00'),
+(2, 1, '2026-03-02 10:00:00'),
+(3, 1, '2026-03-03 10:00:00'),
+(4, 1, '2026-03-04 10:00:00'),
+(5, 1, '2026-03-05 10:00:00'),
+(1, 3, '2026-03-02 11:00:00'),
+(2, 3, '2026-03-03 11:00:00'),
+(3, 3, '2026-03-04 11:00:00'),
+(1, 4, '2026-03-03 12:00:00'),
+(2, 4, '2026-03-04 12:00:00'),
+(3, 4, '2026-03-05 12:00:00'),
+(4, 4, '2026-03-06 12:00:00'),
+(1, 6, '2026-03-01 14:00:00'),
+(2, 6, '2026-03-02 14:00:00'),
+(3, 6, '2026-03-03 14:00:00'),
+(1, 7, '2026-03-05 15:00:00'),
+(2, 7, '2026-03-06 15:00:00'),
+(1, 9, '2026-03-07 16:00:00'),
+(2, 9, '2026-03-08 16:00:00'),
+(3, 9, '2026-03-09 16:00:00'),
+(4, 9, '2026-03-10 16:00:00'),
+(5, 9, '2026-03-11 16:00:00'),
+(1, 12, '2026-03-08 17:00:00'),
+(3, 12, '2026-03-09 17:00:00'),
+(1, 15, '2026-03-10 18:00:00'),
+(2, 15, '2026-03-11 18:00:00'),
+(4, 15, '2026-03-12 18:00:00'),
+(1, 17, '2026-03-11 19:00:00'),
+(2, 17, '2026-03-12 19:00:00'),
+(3, 17, '2026-03-13 19:00:00'),
+(5, 20, '2026-03-12 20:00:00'),
+(1, 20, '2026-03-13 20:00:00'),
+(2, 20, '2026-03-14 20:00:00'),
+(1, 22, '2026-03-14 21:00:00'),
+(2, 22, '2026-03-15 21:00:00'),
 (11, 26, '2026-03-01 08:00:00'),
 (12, 26, '2026-03-02 08:00:00'),
 (13, 30, '2026-03-03 08:00:00'),
@@ -635,242 +487,1076 @@ INSERT INTO SONG_LIKES (user_id, song_id, liked_at) VALUES
 (15, 44, '2026-03-15 08:00:00'),
 (16, 41, '2026-03-16 08:00:00');
 GO
-
--- 17. USER_SONGS (150 rows - Listen history)
--- user_1 has most listens -> Q29
--- song 1 has most total plays -> Q26
--- Recent (last 7 days) for trending -> Q27
 INSERT INTO USER_SONGS (user_id, song_id, listened_at) VALUES
--- ===== RECENT (last 7 days: Mar 11-17, 2026) =====
--- Song 1 - Lạc Trôi (8 recent plays)
-(1,  1,  '2026-03-11 08:00:00'),
-(1,  1,  '2026-03-12 09:00:00'),
-(1,  1,  '2026-03-13 10:00:00'),
-(2,  1,  '2026-03-14 11:00:00'),
-(3,  1,  '2026-03-15 12:00:00'),
-(4,  1,  '2026-03-16 08:00:00'),
-(5,  1,  '2026-03-17 09:00:00'),
-(11, 1,  '2026-03-17 10:00:00'),
--- Song 3 - Chạy Ngay Đi (5 recent)
-(1,  3,  '2026-03-11 10:00:00'),
-(2,  3,  '2026-03-12 11:00:00'),
-(3,  3,  '2026-03-13 12:00:00'),
-(4,  3,  '2026-03-14 13:00:00'),
-(5,  3,  '2026-03-15 14:00:00'),
--- Song 4 - Hãy Trao Cho Anh (5 recent)
-(1,  4,  '2026-03-11 14:00:00'),
-(2,  4,  '2026-03-12 15:00:00'),
-(3,  4,  '2026-03-13 16:00:00'),
-(4,  4,  '2026-03-14 17:00:00'),
-(12, 4,  '2026-03-15 08:00:00'),
--- Song 6 - Nắng Ấm Xa Dần (3 recent)
-(1,  6,  '2026-03-12 08:00:00'),
-(2,  6,  '2026-03-13 09:00:00'),
-(3,  6,  '2026-03-14 10:00:00'),
--- Song 7 - Bài Này Chill Phết (3 recent)
-(1,  7,  '2026-03-15 11:00:00'),
-(2,  7,  '2026-03-16 12:00:00'),
-(3,  7,  '2026-03-17 13:00:00'),
--- Song 9 - How You Like That (7 recent)
-(1,  9,  '2026-03-11 15:00:00'),
-(2,  9,  '2026-03-12 16:00:00'),
-(3,  9,  '2026-03-13 17:00:00'),
-(4,  9,  '2026-03-14 18:00:00'),
-(5,  9,  '2026-03-15 19:00:00'),
-(1,  9,  '2026-03-16 20:00:00'),
-(14, 9,  '2026-03-17 08:00:00'),
--- Song 12 - Bùa Yêu (2 recent)
-(1,  12, '2026-03-14 08:00:00'),
-(2,  12, '2026-03-15 09:00:00'),
--- Song 15 - Rời Bỏ (2 recent)
-(1,  15, '2026-03-16 10:00:00'),
-(2,  15, '2026-03-17 11:00:00'),
--- Song 17 - Shape of You (4 recent)
-(1,  17, '2026-03-13 12:00:00'),
-(2,  17, '2026-03-14 13:00:00'),
-(3,  17, '2026-03-15 14:00:00'),
+(1, 1, '2026-03-11 08:00:00'),
+(1, 1, '2026-03-12 09:00:00'),
+(1, 1, '2026-03-13 10:00:00'),
+(2, 1, '2026-03-14 11:00:00'),
+(3, 1, '2026-03-15 12:00:00'),
+(4, 1, '2026-03-16 08:00:00'),
+(5, 1, '2026-03-17 09:00:00'),
+(11, 1, '2026-03-17 10:00:00'),
+(1, 3, '2026-03-11 10:00:00'),
+(2, 3, '2026-03-12 11:00:00'),
+(3, 3, '2026-03-13 12:00:00'),
+(4, 3, '2026-03-14 13:00:00'),
+(5, 3, '2026-03-15 14:00:00'),
+(1, 4, '2026-03-11 14:00:00'),
+(2, 4, '2026-03-12 15:00:00'),
+(3, 4, '2026-03-13 16:00:00'),
+(4, 4, '2026-03-14 17:00:00'),
+(12, 4, '2026-03-15 08:00:00'),
+(1, 6, '2026-03-12 08:00:00'),
+(2, 6, '2026-03-13 09:00:00'),
+(3, 6, '2026-03-14 10:00:00'),
+(1, 7, '2026-03-15 11:00:00'),
+(2, 7, '2026-03-16 12:00:00'),
+(3, 7, '2026-03-17 13:00:00'),
+(1, 9, '2026-03-11 15:00:00'),
+(2, 9, '2026-03-12 16:00:00'),
+(3, 9, '2026-03-13 17:00:00'),
+(4, 9, '2026-03-14 18:00:00'),
+(5, 9, '2026-03-15 19:00:00'),
+(1, 9, '2026-03-16 20:00:00'),
+(14, 9, '2026-03-17 08:00:00'),
+(1, 12, '2026-03-14 08:00:00'),
+(2, 12, '2026-03-15 09:00:00'),
+(1, 15, '2026-03-16 10:00:00'),
+(2, 15, '2026-03-17 11:00:00'),
+(1, 17, '2026-03-13 12:00:00'),
+(2, 17, '2026-03-14 13:00:00'),
+(3, 17, '2026-03-15 14:00:00'),
 (13, 17, '2026-03-16 08:00:00'),
--- Song 20 - Shake It Off (3 recent)
-(1,  20, '2026-03-11 16:00:00'),
-(2,  20, '2026-03-12 17:00:00'),
-(5,  20, '2026-03-13 18:00:00'),
--- Song 22 - Sóng Gió (3 recent)
-(1,  22, '2026-03-15 15:00:00'),
-(2,  22, '2026-03-16 16:00:00'),
+(1, 20, '2026-03-11 16:00:00'),
+(2, 20, '2026-03-12 17:00:00'),
+(5, 20, '2026-03-13 18:00:00'),
+(1, 22, '2026-03-15 15:00:00'),
+(2, 22, '2026-03-16 16:00:00'),
 (15, 22, '2026-03-17 09:00:00'),
--- Song 36 - Dynamite (4 recent)
 (14, 36, '2026-03-11 08:00:00'),
 (15, 36, '2026-03-12 09:00:00'),
 (16, 36, '2026-03-13 10:00:00'),
-(1,  36, '2026-03-14 11:00:00'),
--- Song 26 - Hãy Về Đây Bên Anh (3 recent)
+(1, 36, '2026-03-14 11:00:00'),
 (11, 26, '2026-03-12 08:00:00'),
 (12, 26, '2026-03-13 09:00:00'),
-(1,  26, '2026-03-14 10:00:00'),
--- Song 30 - Chạm Khẽ Tim Anh (2 recent)
+(1, 26, '2026-03-14 10:00:00'),
 (13, 30, '2026-03-15 08:00:00'),
-(1,  30, '2026-03-16 09:00:00'),
--- Song 38 - 24K Magic (3 recent)
+(1, 30, '2026-03-16 09:00:00'),
 (16, 38, '2026-03-13 08:00:00'),
 (17, 38, '2026-03-14 09:00:00'),
-(1,  38, '2026-03-15 10:00:00'),
--- Song 34 - Lạ Lùng (2 recent)
+(1, 38, '2026-03-15 10:00:00'),
 (15, 34, '2026-03-14 08:00:00'),
-(1,  34, '2026-03-15 09:00:00'),
--- Song 42 - Có Chàng Trai (2 recent)
+(1, 34, '2026-03-15 09:00:00'),
 (18, 42, '2026-03-16 08:00:00'),
 (19, 42, '2026-03-17 09:00:00'),
--- Song 40 - Rolling in the Deep (2 recent)
 (17, 40, '2026-03-15 08:00:00'),
 (18, 40, '2026-03-16 09:00:00'),
-
--- ===== OLDER (Feb 2026) =====
--- Song 1 (4 older -> total 12)
-(1,  1,  '2026-02-01 08:00:00'),
-(1,  1,  '2026-02-05 09:00:00'),
-(2,  1,  '2026-02-10 10:00:00'),
-(3,  1,  '2026-02-15 11:00:00'),
--- Song 2 (3 plays total)
-(1,  2,  '2026-02-01 12:00:00'),
-(2,  2,  '2026-02-05 13:00:00'),
-(3,  2,  '2026-02-10 14:00:00'),
--- Song 3 (2 older -> total 7)
-(1,  3,  '2026-02-01 15:00:00'),
-(2,  3,  '2026-02-05 16:00:00'),
--- Song 4 (5 older -> total 10)
-(1,  4,  '2026-02-02 08:00:00'),
-(2,  4,  '2026-02-06 09:00:00'),
-(3,  4,  '2026-02-11 10:00:00'),
-(4,  4,  '2026-02-16 11:00:00'),
-(5,  4,  '2026-02-20 12:00:00'),
--- Song 5 (2 plays total)
-(1,  5,  '2026-02-03 13:00:00'),
-(2,  5,  '2026-02-07 14:00:00'),
--- Song 6 (3 older -> total 6)
-(1,  6,  '2026-02-04 15:00:00'),
-(2,  6,  '2026-02-08 16:00:00'),
-(3,  6,  '2026-02-12 17:00:00'),
--- Song 7 (1 older -> total 4)
-(1,  7,  '2026-02-05 18:00:00'),
--- Song 9 (4 older -> total 11)
-(1,  9,  '2026-02-06 08:00:00'),
-(2,  9,  '2026-02-10 09:00:00'),
-(3,  9,  '2026-02-14 10:00:00'),
-(4,  9,  '2026-02-18 11:00:00'),
--- Song 10 (2 plays total)
-(1,  10, '2026-02-07 12:00:00'),
-(2,  10, '2026-02-11 13:00:00'),
--- Song 12 (1 older -> total 3)
-(1,  12, '2026-02-08 14:00:00'),
--- Song 15 (3 older -> total 5)
-(1,  15, '2026-02-09 15:00:00'),
-(2,  15, '2026-02-13 16:00:00'),
-(3,  15, '2026-02-17 17:00:00'),
--- Song 17 (2 older -> total 6)
-(1,  17, '2026-02-10 18:00:00'),
-(2,  17, '2026-02-14 08:00:00'),
--- Song 19 (2 plays total)
-(1,  19, '2026-02-11 09:00:00'),
-(2,  19, '2026-02-15 10:00:00'),
--- Song 20 (3 older -> total 6)
-(1,  20, '2026-02-12 11:00:00'),
-(2,  20, '2026-02-16 12:00:00'),
-(3,  20, '2026-02-20 13:00:00'),
--- Song 21 (2 plays total)
-(1,  21, '2026-02-13 14:00:00'),
-(2,  21, '2026-02-17 15:00:00'),
--- Song 22 (1 older -> total 4)
-(1,  22, '2026-02-14 16:00:00'),
--- Song 23 (2 plays total)
-(1,  23, '2026-02-15 17:00:00'),
-(2,  23, '2026-02-19 18:00:00'),
--- New songs older plays
--- Song 26 (2 older -> total 5)
+(1, 1, '2026-02-01 08:00:00'),
+(1, 1, '2026-02-05 09:00:00'),
+(2, 1, '2026-02-10 10:00:00'),
+(3, 1, '2026-02-15 11:00:00'),
+(1, 2, '2026-02-01 12:00:00'),
+(2, 2, '2026-02-05 13:00:00'),
+(3, 2, '2026-02-10 14:00:00'),
+(1, 3, '2026-02-01 15:00:00'),
+(2, 3, '2026-02-05 16:00:00'),
+(1, 4, '2026-02-02 08:00:00'),
+(2, 4, '2026-02-06 09:00:00'),
+(3, 4, '2026-02-11 10:00:00'),
+(4, 4, '2026-02-16 11:00:00'),
+(5, 4, '2026-02-20 12:00:00'),
+(1, 5, '2026-02-03 13:00:00'),
+(2, 5, '2026-02-07 14:00:00'),
+(1, 6, '2026-02-04 15:00:00'),
+(2, 6, '2026-02-08 16:00:00'),
+(3, 6, '2026-02-12 17:00:00'),
+(1, 7, '2026-02-05 18:00:00'),
+(1, 9, '2026-02-06 08:00:00'),
+(2, 9, '2026-02-10 09:00:00'),
+(3, 9, '2026-02-14 10:00:00'),
+(4, 9, '2026-02-18 11:00:00'),
+(1, 10, '2026-02-07 12:00:00'),
+(2, 10, '2026-02-11 13:00:00'),
+(1, 12, '2026-02-08 14:00:00'),
+(1, 15, '2026-02-09 15:00:00'),
+(2, 15, '2026-02-13 16:00:00'),
+(3, 15, '2026-02-17 17:00:00'),
+(1, 17, '2026-02-10 18:00:00'),
+(2, 17, '2026-02-14 08:00:00'),
+(1, 19, '2026-02-11 09:00:00'),
+(2, 19, '2026-02-15 10:00:00'),
+(1, 20, '2026-02-12 11:00:00'),
+(2, 20, '2026-02-16 12:00:00'),
+(3, 20, '2026-02-20 13:00:00'),
+(1, 21, '2026-02-13 14:00:00'),
+(2, 21, '2026-02-17 15:00:00'),
+(1, 22, '2026-02-14 16:00:00'),
+(1, 23, '2026-02-15 17:00:00'),
+(2, 23, '2026-02-19 18:00:00'),
 (11, 26, '2026-02-01 08:00:00'),
-(1,  26, '2026-02-10 09:00:00'),
--- Song 27 (2 plays)
+(1, 26, '2026-02-10 09:00:00'),
 (11, 27, '2026-02-02 10:00:00'),
 (12, 27, '2026-02-12 11:00:00'),
--- Song 28 (2 plays)
 (12, 28, '2026-02-03 12:00:00'),
 (13, 28, '2026-02-13 13:00:00'),
--- Song 29 (2 plays)
 (12, 29, '2026-02-04 14:00:00'),
 (14, 29, '2026-02-14 15:00:00'),
--- Song 30 (2 older -> total 4)
 (13, 30, '2026-02-05 16:00:00'),
-(1,  30, '2026-02-15 17:00:00'),
--- Song 31 (2 plays)
+(1, 30, '2026-02-15 17:00:00'),
 (13, 31, '2026-02-06 18:00:00'),
 (11, 31, '2026-02-16 08:00:00'),
--- Song 32 (2 plays)
 (14, 32, '2026-02-07 09:00:00'),
 (15, 32, '2026-02-17 10:00:00'),
--- Song 33 (2 plays)
 (14, 33, '2026-02-08 11:00:00'),
-(1,  33, '2026-02-18 12:00:00'),
--- Song 34 (2 older -> total 4)
+(1, 33, '2026-02-18 12:00:00'),
 (15, 34, '2026-02-09 13:00:00'),
-(1,  34, '2026-02-19 14:00:00'),
--- Song 35 (2 plays)
+(1, 34, '2026-02-19 14:00:00'),
 (15, 35, '2026-02-10 15:00:00'),
 (16, 35, '2026-02-20 16:00:00'),
--- Song 36 (3 older -> total 7)
 (16, 36, '2026-02-01 17:00:00'),
 (14, 36, '2026-02-11 18:00:00'),
-(1,  36, '2026-02-21 08:00:00'),
--- Song 37 (2 plays)
+(1, 36, '2026-02-21 08:00:00'),
 (16, 37, '2026-02-02 09:00:00'),
 (14, 37, '2026-02-12 10:00:00'),
--- Song 38 (2 older -> total 5)
 (17, 38, '2026-02-03 11:00:00'),
-(1,  38, '2026-02-13 12:00:00'),
--- Song 39 (2 plays)
+(1, 38, '2026-02-13 12:00:00'),
 (17, 39, '2026-02-04 13:00:00'),
 (18, 39, '2026-02-14 14:00:00'),
--- Song 40 (2 older -> total 4)
 (18, 40, '2026-02-05 15:00:00'),
 (17, 40, '2026-02-15 16:00:00'),
--- Song 41 (2 plays)
 (18, 41, '2026-02-06 17:00:00'),
 (16, 41, '2026-02-16 18:00:00'),
--- Song 42 (2 older -> total 4)
 (19, 42, '2026-02-07 08:00:00'),
-(1,  42, '2026-02-17 09:00:00'),
--- Song 43 (2 plays)
+(1, 42, '2026-02-17 09:00:00'),
 (19, 43, '2026-02-08 10:00:00'),
 (20, 43, '2026-02-18 11:00:00'),
--- Song 44 (2 plays)
 (20, 44, '2026-02-09 12:00:00'),
 (14, 44, '2026-02-19 13:00:00'),
--- Song 45 (2 plays)
 (20, 45, '2026-02-10 14:00:00'),
-(1,  45, '2026-02-20 15:00:00');
+(1, 45, '2026-02-20 15:00:00');
 GO
 
 -- =============================================
--- RECORD COUNTS SUMMARY:
+-- ADDITIONAL DATA — 200% SCALE-UP
 -- =============================================
--- ROLES:               3  (excluded)
--- USERS:              20
--- SUBSCRIPTION_PLANS:  5  (excluded)
--- USER_SUBSCRIPTIONS: 25
--- PAYMENTS:           30
--- ARTISTS:            20
--- ALBUMS:             20
--- SONGS:              45
--- SONG_ARTISTS:       55
--- GENRES:             20
--- SONG_GENRES:        85
--- PLAYLISTS:          20
--- PLAYLIST_SONGS:     60
--- SONG_COMMENTS:      35
--- COMMENT_LIKES:      35
--- SONG_LIKES:         50
--- USER_SONGS:        150
--- =============================================
--- Q7:  use album_id=2 (Sky Tour: 4 songs)
--- Q14: use @song_id=6
--- Q16: use @song_id=6, @timestamp=30
--- Q18: use comment_id=100
--- =============================================
+
+-- New USERS (21-60)
+SET IDENTITY_INSERT USERS ON;
+INSERT INTO USERS (user_id, username, email, password_hash, avatar_url, role_id) VALUES
+(21, 'user_19', 'user19@mail.com', 'hash_u21', 'https://avatar.com/user19.jpg', 2),
+(22, 'user_20', 'user20@mail.com', 'hash_u22', 'https://avatar.com/user20.jpg', 2),
+(23, 'user_21', 'user21@mail.com', 'hash_u23', 'https://avatar.com/user21.jpg', 2),
+(24, 'user_22', 'user22@mail.com', 'hash_u24', 'https://avatar.com/user22.jpg', 2),
+(25, 'user_23', 'user23@mail.com', 'hash_u25', 'https://avatar.com/user23.jpg', 2),
+(26, 'user_24', 'user24@mail.com', 'hash_u26', 'https://avatar.com/user24.jpg', 2),
+(27, 'user_25', 'user25@mail.com', 'hash_u27', 'https://avatar.com/user25.jpg', 2),
+(28, 'user_26', 'user26@mail.com', 'hash_u28', 'https://avatar.com/user26.jpg', 2),
+(29, 'user_27', 'user27@mail.com', 'hash_u29', 'https://avatar.com/user27.jpg', 2),
+(30, 'user_28', 'user28@mail.com', 'hash_u30', 'https://avatar.com/user28.jpg', 2),
+(31, 'user_29', 'user29@mail.com', 'hash_u31', 'https://avatar.com/user29.jpg', 2),
+(32, 'user_30', 'user30@mail.com', 'hash_u32', 'https://avatar.com/user30.jpg', 2),
+(33, 'user_31', 'user31@mail.com', 'hash_u33', 'https://avatar.com/user31.jpg', 2),
+(34, 'user_32', 'user32@mail.com', 'hash_u34', 'https://avatar.com/user32.jpg', 2),
+(35, 'user_33', 'user33@mail.com', 'hash_u35', 'https://avatar.com/user33.jpg', 2),
+(36, 'user_34', 'user34@mail.com', 'hash_u36', 'https://avatar.com/user34.jpg', 2),
+(37, 'user_35', 'user35@mail.com', 'hash_u37', 'https://avatar.com/user35.jpg', 2),
+(38, 'user_36', 'user36@mail.com', 'hash_u38', 'https://avatar.com/user36.jpg', 2),
+(39, 'user_37', 'user37@mail.com', 'hash_u39', 'https://avatar.com/user37.jpg', 2),
+(40, 'user_38', 'user38@mail.com', 'hash_u40', 'https://avatar.com/user38.jpg', 2),
+(41, 'user_39', 'user39@mail.com', 'hash_u41', 'https://avatar.com/user39.jpg', 2),
+(42, 'user_40', 'user40@mail.com', 'hash_u42', 'https://avatar.com/user40.jpg', 2),
+(43, 'user_41', 'user41@mail.com', 'hash_u43', 'https://avatar.com/user41.jpg', 2),
+(44, 'user_42', 'user42@mail.com', 'hash_u44', 'https://avatar.com/user42.jpg', 2),
+(45, 'user_43', 'user43@mail.com', 'hash_u45', 'https://avatar.com/user45.jpg', 2),
+(46, 'user_44', 'user44@mail.com', 'hash_u46', 'https://avatar.com/user46.jpg', 2),
+(47, 'user_45', 'user45@mail.com', 'hash_u47', 'https://avatar.com/user47.jpg', 2),
+(48, 'user_46', 'user46@mail.com', 'hash_u48', 'https://avatar.com/user48.jpg', 2),
+(49, 'user_47', 'user47@mail.com', 'hash_u49', 'https://avatar.com/user49.jpg', 2),
+(50, 'user_48', 'user48@mail.com', 'hash_u50', 'https://avatar.com/user50.jpg', 2),
+(51, 'admin_2', 'admin2@mail.com', 'hash_u51', 'https://avatar.com/admin2.jpg', 1),
+(52, 'mod_2', 'mod2@mail.com', 'hash_u52', 'https://avatar.com/mod2.jpg', 3),
+(53, 'user_49', 'user49@mail.com', 'hash_u53', 'https://avatar.com/user53.jpg', 2),
+(54, 'user_50', 'user50@mail.com', 'hash_u54', 'https://avatar.com/user54.jpg', 2),
+(55, 'user_51', 'user51@mail.com', 'hash_u55', 'https://avatar.com/user55.jpg', 2),
+(56, 'user_52', 'user52@mail.com', 'hash_u56', 'https://avatar.com/user56.jpg', 2),
+(57, 'user_53', 'user53@mail.com', 'hash_u57', 'https://avatar.com/user57.jpg', 2),
+(58, 'user_54', 'user54@mail.com', 'hash_u58', 'https://avatar.com/user58.jpg', 2),
+(59, 'mod_3', 'mod3@mail.com', 'hash_u59', 'https://avatar.com/mod3.jpg', 3),
+(60, 'user_55', 'user55@mail.com', 'hash_u60', 'https://avatar.com/user55.jpg', 2);
+SET IDENTITY_INSERT USERS OFF;
+GO
+
+-- New ARTISTS (21-60)
+SET IDENTITY_INSERT ARTISTS ON;
+INSERT INTO ARTISTS (artist_id, name, country, bio, cover_image_url) VALUES
+(21, N'Hoàng Thùy Linh', N'Việt Nam', N'Ca sĩ, diễn viên đa tài', 'https://img.com/hoangthuylinh.jpg'),
+(22, N'AMEE', N'Việt Nam', N'Công chúa nhạc Pop Gen-Z', 'https://img.com/amee.jpg'),
+(23, N'Binz', N'Việt Nam', N'Rapper nổi tiếng Rap Việt', 'https://img.com/binz.jpg'),
+(24, N'Wren Evans', N'Việt Nam', N'Nghệ sĩ Gen-Z phong cách mới', 'https://img.com/wrenevans.jpg'),
+(25, N'Phùng Khánh Linh', N'Việt Nam', N'Ca sĩ Indie Pop trẻ', 'https://img.com/phungkhanhlinh.jpg'),
+(26, N'Vũ Cát Tường', N'Việt Nam', N'Ca sĩ, nhạc sĩ tài năng', 'https://img.com/vucattuong.jpg'),
+(27, N'Erik', N'Việt Nam', N'Hoàng tử nhạc Pop Việt', 'https://img.com/erik.jpg'),
+(28, N'MONO', N'Việt Nam', N'Ca sĩ trẻ đột phá 2022', 'https://img.com/mono.jpg'),
+(29, N'JustaTee', N'Việt Nam', N'Ca sĩ R&B nổi tiếng', 'https://img.com/justatee.jpg'),
+(30, N'Suboi', N'Việt Nam', N'Nữ hoàng Rap Việt', 'https://img.com/suboi.jpg'),
+(31, N'The Weeknd', N'Canada', N'Ca sĩ R&B/Pop hàng đầu thế giới', 'https://img.com/theweeknd.jpg'),
+(32, N'Dua Lipa', N'Anh', N'Nữ ca sĩ Pop quốc tế', 'https://img.com/dualipa.jpg'),
+(33, N'Billie Eilish', N'Mỹ', N'Nghệ sĩ Gen-Z tài năng', 'https://img.com/billieeilish.jpg'),
+(34, N'Harry Styles', N'Anh', N'Ca sĩ, diễn viên nổi tiếng', 'https://img.com/harrystyles.jpg'),
+(35, N'Ariana Grande', N'Mỹ', N'Pop diva nổi tiếng', 'https://img.com/arianagrande.jpg'),
+(36, N'Drake', N'Canada', N'Rapper hàng đầu thế giới', 'https://img.com/drake.jpg'),
+(37, N'Post Malone', N'Mỹ', N'Ca sĩ đa thể loại', 'https://img.com/postmalone.jpg'),
+(38, N'Doja Cat', N'Mỹ', N'Nữ rapper sáng tạo', 'https://img.com/dojacat.jpg'),
+(39, N'IU', N'Hàn Quốc', N'Nữ hoàng nhạc số Hàn Quốc', 'https://img.com/iu.jpg'),
+(40, N'TWICE', N'Hàn Quốc', N'Nhóm nhạc nữ Kpop nổi tiếng', 'https://img.com/twice.jpg'),
+(41, N'Lý Hải', N'Việt Nam', N'Ca sĩ, đạo diễn nổi tiếng', 'https://img.com/lyhai.jpg'),
+(42, N'Bảo Anh', N'Việt Nam', N'Ca sĩ Pop/Ballad nổi bật', 'https://img.com/baoanh.jpg'),
+(43, N'Chi Pu', N'Việt Nam', N'Ca sĩ, diễn viên đa năng', 'https://img.com/chipu.jpg'),
+(44, N'Soobin Hoàng Sơn', N'Việt Nam', N'Ca sĩ trẻ tài năng', 'https://img.com/soobin.jpg'),
+(45, N'Hà Anh Tuấn', N'Việt Nam', N'Hoàng tử nhạc Acoustic', 'https://img.com/haanhtuan.jpg'),
+(46, N'Lam Trường', N'Việt Nam', N'Ca sĩ nhạc trẻ huyền thoại', 'https://img.com/lamtruong.jpg'),
+(47, N'Tuấn Hưng', N'Việt Nam', N'Ca sĩ Rock/Ballad nổi tiếng', 'https://img.com/tuanhung.jpg'),
+(48, N'EXO', N'Hàn Quốc', N'Nhóm nhạc nam Kpop hàng đầu', 'https://img.com/exo.jpg'),
+(49, N'Imagine Dragons', N'Mỹ', N'Ban nhạc Pop Rock nổi tiếng', 'https://img.com/imaginedragons.jpg'),
+(50, N'Coldplay', N'Anh', N'Ban nhạc Alternative Rock huyền thoại', 'https://img.com/coldplay.jpg'),
+(51, N'Beyoncé', N'Mỹ', N'Nữ hoàng nhạc Pop/R&B', 'https://img.com/beyonce.jpg'),
+(52, N'Lady Gaga', N'Mỹ', N'Pop icon đầy sáng tạo', 'https://img.com/ladygaga.jpg'),
+(53, N'Sam Smith', N'Anh', N'Ca sĩ giọng khủng', 'https://img.com/samsmith.jpg'),
+(54, N'Olivia Rodrigo', N'Mỹ', N'Ngôi sao nhạc Pop Gen-Z', 'https://img.com/oliviarodrigo.jpg'),
+(55, N'Bad Bunny', N'Puerto Rico', N'Vua nhạc Reggaeton', 'https://img.com/badbunny.jpg'),
+(56, N'Thái Vũ', N'Việt Nam', N'Ca sĩ, nhà sáng tạo nội dung', 'https://img.com/thaivu.jpg'),
+(57, N'Trịnh Thăng Bình', N'Việt Nam', N'Ca sĩ, diễn viên nổi tiếng', 'https://img.com/trinhthangbinh.jpg'),
+(58, N'Hương Tràm', N'Việt Nam', N'Ca sĩ giọng khỏe Việt Nam', 'https://img.com/huongtram.jpg'),
+(59, N'Orange', N'Việt Nam', N'Ca sĩ trẻ tài năng', 'https://img.com/orange.jpg'),
+(60, N'Tăng Duy Tân', N'Việt Nam', N'Nghệ sĩ đa phong cách mới nổi', 'https://img.com/tangduytan.jpg');
+SET IDENTITY_INSERT ARTISTS OFF;
+GO
+
+-- New ALBUMS (21-60)
+SET IDENTITY_INSERT ALBUMS ON;
+INSERT INTO ALBUMS (album_id, title, artist_id, release_year, cover_image_url, record_label) VALUES
+(21, N'Hoàng', 21, 2019, 'https://img.com/album21.jpg', N'Universal Music'),
+(22, N'dreAMEE', 22, 2020, 'https://img.com/album22.jpg', N'Warner Music'),
+(23, N'Binz Da Poet', 23, 2020, 'https://img.com/album23.jpg', N'SpaceSpeakers'),
+(24, N'LOI CHOI', 24, 2023, 'https://img.com/album24.jpg', N'Independent'),
+(25, N'Citopia', 25, 2022, 'https://img.com/album25.jpg', N'Independent'),
+(26, N'Stardom', 26, 2019, 'https://img.com/album26.jpg', N'Independent'),
+(27, N'Em Không Sai Chúng Ta Sai', 27, 2019, 'https://img.com/album27.jpg', N'Independent'),
+(28, N'22', 28, 2022, 'https://img.com/album28.jpg', N'M-TP Entertainment'),
+(29, N'JustaTee Collection', 29, 2020, 'https://img.com/album29.jpg', N'Independent'),
+(30, N'No Nê', 30, 2021, 'https://img.com/album30.jpg', N'Independent'),
+(31, N'After Hours', 31, 2020, 'https://img.com/album31.jpg', N'Republic Records'),
+(32, N'Future Nostalgia', 32, 2020, 'https://img.com/album32.jpg', N'Warner Records'),
+(33, N'Happier Than Ever', 33, 2021, 'https://img.com/album33.jpg', N'Interscope Records'),
+(34, N'Harry''s House', 34, 2022, 'https://img.com/album34.jpg', N'Columbia Records'),
+(35, N'Positions', 35, 2020, 'https://img.com/album35.jpg', N'Republic Records'),
+(36, N'Certified Lover Boy', 36, 2021, 'https://img.com/album36.jpg', N'OVO Sound'),
+(37, N'Hollywood''s Bleeding', 37, 2019, 'https://img.com/album37.jpg', N'Republic Records'),
+(38, N'Planet Her', 38, 2021, 'https://img.com/album38.jpg', N'Kemosabe Records'),
+(39, N'Lilac', 39, 2021, 'https://img.com/album39.jpg', N'EDAM Entertainment'),
+(40, N'Formula of Love', 40, 2021, 'https://img.com/album40.jpg', N'JYP Entertainment'),
+(41, N'Lý Hải Collection', 41, 2018, 'https://img.com/album41.jpg', N'Independent'),
+(42, N'In The Rain', 42, 2020, 'https://img.com/album42.jpg', N'Independent'),
+(43, N'Đóa Hoa Hồng', 43, 2019, 'https://img.com/album43.jpg', N'Independent'),
+(44, N'Soobin Collection', 44, 2021, 'https://img.com/album44.jpg', N'Independent'),
+(45, N'See Sing Share', 45, 2018, 'https://img.com/album45.jpg', N'Independent'),
+(46, N'Lam Trường Best', 46, 2017, 'https://img.com/album46.jpg', N'Independent'),
+(47, N'Tuấn Hưng Hits', 47, 2016, 'https://img.com/album47.jpg', N'Independent'),
+(48, N'Don''t Mess Up My Tempo', 48, 2018, 'https://img.com/album48.jpg', N'SM Entertainment'),
+(49, N'Evolve', 49, 2017, 'https://img.com/album49.jpg', N'Interscope Records'),
+(50, N'Music of the Spheres', 50, 2021, 'https://img.com/album50.jpg', N'Parlophone'),
+(51, N'Renaissance', 51, 2022, 'https://img.com/album51.jpg', N'Columbia Records'),
+(52, N'Chromatica', 52, 2020, 'https://img.com/album52.jpg', N'Interscope Records'),
+(53, N'Gloria', 53, 2023, 'https://img.com/album53.jpg', N'Capitol Records'),
+(54, N'SOUR', 54, 2021, 'https://img.com/album54.jpg', N'Geffen Records'),
+(55, N'Un Verano Sin Ti', 55, 2022, 'https://img.com/album55.jpg', N'Rimas Entertainment'),
+(56, N'Thái Vũ Hits', 56, 2023, 'https://img.com/album56.jpg', N'Independent'),
+(57, N'Người Ấy Collection', 57, 2018, 'https://img.com/album57.jpg', N'Independent'),
+(58, N'Em Gái Mưa', 58, 2019, 'https://img.com/album58.jpg', N'Independent'),
+(59, N'Người Lạ Ơi Collection', 59, 2018, 'https://img.com/album59.jpg', N'Independent'),
+(60, N'TDT Collection', 60, 2023, 'https://img.com/album60.jpg', N'Independent');
+SET IDENTITY_INSERT ALBUMS OFF;
+GO
+
+-- New SONGS (46-135): 2 per new album + 10 singles
+SET IDENTITY_INSERT SONGS ON;
+INSERT INTO SONGS (song_id, name, album_id, duration, file_path, lyrics) VALUES
+(46, N'See Tình', 21, 232, '/music/see_tinh.mp3', N'See tình, thấy em là thấy tình...'),
+(47, N'Để Mị Nói Cho Mà Nghe', 21, 248, '/music/de_mi_noi.mp3', N'Để Mị nói cho mà nghe...'),
+(48, N'Anh Nhà Ở Đâu Thế', 22, 218, '/music/anh_nha_o_dau.mp3', N'Anh nhà ở đâu thế...'),
+(49, N'Ex''s Hate Me', 22, 205, '/music/exs_hate_me.mp3', N'Ex''s hate me...'),
+(50, N'Bigcityboi', 23, 195, '/music/bigcityboi.mp3', N'Big city boi, ở đây anh lớn lên...'),
+(51, N'Gene', 23, 210, '/music/gene_binz.mp3', N'Gene gene gene, đó là gene...'),
+(52, N'Lối Chơi', 24, 228, '/music/loi_choi.mp3', N'Lối chơi đưa ta vào cuộc...'),
+(53, N'Thích', 24, 215, '/music/thich_wren.mp3', N'Thích em từ ngày đầu gặp gỡ...'),
+(54, N'Trời Giấu Trời Mang Đi', 25, 242, '/music/troi_giau.mp3', N'Trời giấu trời mang đi...'),
+(55, N'Nàng Thơ', 25, 256, '/music/nang_tho_pkl.mp3', N'Nàng thơ ơi nàng thơ...'),
+(56, N'Yêu Xa', 26, 278, '/music/yeu_xa.mp3', N'Yêu xa thật sao mà khó...'),
+(57, N'Mơ', 26, 245, '/music/mo_vct.mp3', N'Mơ một ngày nào đó bên nhau...'),
+(58, N'Sau Tất Cả', 27, 290, '/music/sau_tat_ca.mp3', N'Sau tất cả anh cũng chỉ là người thương em...'),
+(59, N'Em Không Sai Chúng Ta Sai', 27, 265, '/music/em_khong_sai.mp3', N'Em không sai chúng ta sai...'),
+(60, N'Waiting For You (MONO)', 28, 215, '/music/waiting_mono.mp3', N'Waiting for you every day...'),
+(61, N'Em Là', 28, 238, '/music/em_la_mono.mp3', N'Em là tất cả những gì anh cần...'),
+(62, N'Thằng Điên', 29, 252, '/music/thang_dien.mp3', N'Thằng điên yêu em từ ngày đó...'),
+(63, N'Đã Lỡ Yêu Em Nhiều', 29, 268, '/music/da_lo_yeu.mp3', N'Đã lỡ yêu em nhiều lắm rồi...'),
+(64, N'N-SAO?', 30, 198, '/music/nsao.mp3', N'N-sao mà lại thế nhỉ...'),
+(65, N'Đời', 30, 208, '/music/doi_suboi.mp3', N'Đời là vậy thôi mà...'),
+(66, N'Blinding Lights', 31, 200, '/music/blinding_lights.mp3', N'I''ve been tryna call, I''ve been on my own...'),
+(67, N'Save Your Tears', 31, 215, '/music/save_your_tears.mp3', N'I saw you dancing in a crowded room...'),
+(68, N'Don''t Start Now', 32, 183, '/music/dont_start_now.mp3', N'Did a full 180, crazy...'),
+(69, N'Levitating', 32, 203, '/music/levitating.mp3', N'If you wanna run away with me...'),
+(70, N'Bad Guy', 33, 194, '/music/bad_guy.mp3', N'White shirt now red, my bloody nose...'),
+(71, N'Happier Than Ever', 33, 298, '/music/happier_than_ever.mp3', N'When I''m away from you, I''m happier...'),
+(72, N'As It Was', 34, 167, '/music/as_it_was.mp3', N'Holding me back, gravity''s holding me back...'),
+(73, N'Watermelon Sugar', 34, 174, '/music/watermelon_sugar.mp3', N'Tastes like strawberries on a summer evenin...'),
+(74, N'Positions', 35, 172, '/music/positions.mp3', N'Switchin'' the positions for you...'),
+(75, N'7 Rings', 35, 179, '/music/7_rings.mp3', N'I see it, I like it, I want it, I got it...'),
+(76, N'God''s Plan', 36, 198, '/music/gods_plan.mp3', N'I only love my bed and my mama, I''m sorry...'),
+(77, N'One Dance', 36, 173, '/music/one_dance.mp3', N'Got a pretty girl and she love me long time...'),
+(78, N'Circles', 37, 215, '/music/circles.mp3', N'We couldn''t turn around til we were upside down...'),
+(79, N'Sunflower', 37, 158, '/music/sunflower.mp3', N'Needless to say, I keep in check...'),
+(80, N'Kiss Me More', 38, 208, '/music/kiss_me_more.mp3', N'Can you kiss me more, we''re so young...'),
+(81, N'Say So', 38, 197, '/music/say_so.mp3', N'Day to night to morning, keep with me...'),
+(82, N'Lilac', 39, 214, '/music/lilac_iu.mp3', N'I''m walking on the purple road, Lilac...'),
+(83, N'Celebrity', 39, 195, '/music/celebrity.mp3', N'You are my celebrity, my superstar...'),
+(84, N'Alcohol-Free', 40, 196, '/music/alcohol_free.mp3', N'It comes up from my toes, feeling so high...'),
+(85, N'Scientist', 40, 191, '/music/scientist_twice.mp3', N'Don''t think about it too much...'),
+(86, N'Đồi Thông Hai Mộ', 41, 310, '/music/doi_thong.mp3', N'Đồi thông hai mộ buồn tênh...'),
+(87, N'Trả Nợ Tình Xa', 41, 295, '/music/tra_no_tinh.mp3', N'Trả nợ tình xa người ơi...'),
+(88, N'Như Lời Đồn', 42, 225, '/music/nhu_loi_don.mp3', N'Như lời đồn em thấy anh bên người ta...'),
+(89, N'In The Rain', 42, 245, '/music/in_the_rain.mp3', N'In the rain I stand alone waiting...'),
+(90, N'Đóa Hoa Hồng', 43, 218, '/music/doa_hoa_hong.mp3', N'Đóa hoa hồng, queen of my heart...'),
+(91, N'Anh Ơi Ở Lại', 43, 235, '/music/anh_oi_o_lai.mp3', N'Anh ơi ở lại, đừng đi nữa mà...'),
+(92, N'Phí Duyên', 44, 242, '/music/phi_duyen.mp3', N'Phí duyên phận này, em xa anh rồi...'),
+(93, N'Đi Để Trở Về', 44, 228, '/music/di_de_tro_ve.mp3', N'Đi để trở về, bước chân phiêu du...'),
+(94, N'Tháng Tư Là Lời Nói Dối Của Em', 45, 305, '/music/thang_tu.mp3', N'Tháng tư là lời nói dối của em...'),
+(95, N'Người Tình Mùa Đông', 45, 280, '/music/nguoi_tinh_mua_dong_hat.mp3', N'Người tình mùa đông ơi, có nhớ...'),
+(96, N'Mắt Ngọc', 46, 258, '/music/mat_ngoc.mp3', N'Mắt ngọc trong veo như sương sớm...'),
+(97, N'Tình Thôi Xót Xa', 46, 275, '/music/tinh_thoi_xot_xa.mp3', N'Tình thôi xót xa người ơi...'),
+(98, N'Nắm Lấy Tay Anh', 47, 262, '/music/nam_lay_tay_anh.mp3', N'Nắm lấy tay anh, đi cùng anh nhé...'),
+(99, N'Độc Thoại', 47, 288, '/music/doc_thoai.mp3', N'Độc thoại cùng đêm dài lê thê...'),
+(100, N'Love Shot', 48, 192, '/music/love_shot.mp3', N'It''s a love shot, yeah yeah...'),
+(101, N'Tempo', 48, 210, '/music/tempo_exo.mp3', N'Tempo tempo, can you go mi amor...'),
+(102, N'Believer', 49, 204, '/music/believer.mp3', N'First things first, I''m a say all the words...'),
+(103, N'Radioactive', 49, 187, '/music/radioactive.mp3', N'I''m waking up to ash and dust...'),
+(104, N'Viva La Vida', 50, 242, '/music/viva_la_vida.mp3', N'I used to rule the world...'),
+(105, N'Fix You', 50, 296, '/music/fix_you.mp3', N'When you try your best but you don''t succeed...'),
+(106, N'Break My Soul', 51, 279, '/music/break_my_soul.mp3', N'You won''t break my soul, I''m telling everybody...'),
+(107, N'Halo', 51, 262, '/music/halo.mp3', N'Remember those walls I built, well baby...'),
+(108, N'Rain On Me', 52, 183, '/music/rain_on_me.mp3', N'I''d rather be dry but at least I''m alive...'),
+(109, N'Shallow', 52, 216, '/music/shallow.mp3', N'Tell me something girl, are you happy...'),
+(110, N'Unholy', 53, 157, '/music/unholy.mp3', N'Mommy don''t know daddy''s getting hot...'),
+(111, N'Stay With Me', 53, 172, '/music/stay_with_me.mp3', N'Oh won''t you stay with me...'),
+(112, N'Drivers License', 54, 248, '/music/drivers_license.mp3', N'I got my driver''s license last week...'),
+(113, N'Good 4 U', 54, 178, '/music/good_4_u.mp3', N'Well good for you, I guess you moved on...'),
+(114, N'Titi Me Preguntó', 55, 244, '/music/titi_me_pregunto.mp3', N'Titi me preguntó si tengo muchas novias...'),
+(115, N'Me Porto Bonito', 55, 178, '/music/me_porto_bonito.mp3', N'Me porto bonito pa que me recuerdes...'),
+(116, N'Ai Mà Biết Được', 56, 212, '/music/ai_ma_biet.mp3', N'Ai mà biết được ngày mai thế nào...'),
+(117, N'Trốn Tìm', 56, 198, '/music/tron_tim_tv.mp3', N'Trốn tìm trong bóng đêm...'),
+(118, N'Người Ấy', 57, 268, '/music/nguoi_ay_ttb.mp3', N'Người ấy bây giờ ra sao rồi nhỉ...'),
+(119, N'Em Ngày Xưa Khác Rồi', 57, 242, '/music/em_ngay_xua.mp3', N'Em ngày xưa khác rồi, anh biết không...'),
+(120, N'Em Gái Mưa', 58, 278, '/music/em_gai_mua.mp3', N'Em gái mưa không nỡ giận lâu...'),
+(121, N'Cho Em Gần Anh Thêm Chút Nữa', 58, 265, '/music/cho_em_gan_anh.mp3', N'Cho em gần anh thêm chút nữa...'),
+(122, N'Người Lạ Ơi', 59, 232, '/music/nguoi_la_oi.mp3', N'Người lạ ơi người lạ ơi...'),
+(123, N'Chân Ái', 59, 218, '/music/chan_ai.mp3', N'Chân ái đâu phải thứ xa vời...'),
+(124, N'Bên Trên Tầng Lầu', 60, 225, '/music/ben_tren_tang_lau.mp3', N'Bên trên tầng lầu, gió hát vi vu...'),
+(125, N'Ngẫu Hứng', 60, 208, '/music/ngau_hung.mp3', N'Ngẫu hứng ta vui cùng nhau...'),
+(126, N'Là 1 Thằng Con Trai', NULL, 235, '/music/la_1_thang_con_trai.mp3', N'Là 1 thằng con trai, phải biết lo xa...'),
+(127, N'Ngủ Đi Em', NULL, 262, '/music/ngu_di_em.mp3', N'Ngủ đi em, để anh ru em ngủ...'),
+(128, N'Yêu Đơn Phương', NULL, 245, '/music/yeu_don_phuong.mp3', N'Yêu đơn phương là buồn lắm ai ơi...'),
+(129, N'Counting Stars', NULL, 257, '/music/counting_stars.mp3', N'Lately I been, I been losing sleep...'),
+(130, N'Anh Sai Rồi', NULL, 218, '/music/anh_sai_roi.mp3', N'Anh sai rồi em ơi, anh xin lỗi...'),
+(131, N'Mashup Vpop 2026', NULL, 345, '/music/mashup_vpop.mp3', N'Mashup tổng hợp các bài hát Vpop...'),
+(132, N'Đừng Như Thói Quen', NULL, 258, '/music/dung_nhu_thoi_quen.mp3', N'Đừng như thói quen mình bên nhau...'),
+(133, N'Yêu Là Cưới', NULL, 192, '/music/yeu_la_cuoi.mp3', N'Yêu là cưới thôi, cần chi đợi...'),
+(134, N'Đêm Nay', NULL, 278, '/music/dem_nay.mp3', N'Đêm nay ai nhớ ai, trời lạnh lắm...'),
+(135, N'Thương Em', NULL, 238, '/music/thuong_em.mp3', N'Thương em từ thuở ban đầu gặp gỡ...');
+SET IDENTITY_INSERT SONGS OFF;
+GO
+
+-- New USER_SUBSCRIPTIONS (26-75)
+SET IDENTITY_INSERT USER_SUBSCRIPTIONS ON;
+INSERT INTO USER_SUBSCRIPTIONS (subscription_id, user_id, plan_id, start_date, end_date, status, auto_renew) VALUES
+(26, 21, 3, '2026-01-01', '2026-04-01', 'active', 1),
+(27, 22, 2, '2026-02-01', '2026-05-01', 'active', 0),
+(28, 23, 5, '2026-01-15', '2026-04-15', 'active', 1),
+(29, 24, 3, '2026-02-01', '2026-05-01', 'active', 1),
+(30, 25, 4, '2026-01-01', '2026-04-01', 'active', 1),
+(31, 26, 3, '2026-03-01', '2026-06-01', 'active', 0),
+(32, 27, 2, '2026-02-15', '2026-05-15', 'active', 1),
+(33, 28, 3, '2026-01-01', '2026-04-01', 'active', 1),
+(34, 29, 5, '2026-03-01', '2026-06-01', 'active', 0),
+(35, 30, 1, '2026-03-01', '2026-04-01', 'active', 0),
+(36, 31, 3, '2026-02-01', '2026-05-01', 'active', 1),
+(37, 32, 3, '2026-01-15', '2026-04-15', 'active', 1),
+(38, 33, 4, '2026-02-01', '2026-05-01', 'active', 1),
+(39, 34, 2, '2026-03-01', '2026-06-01', 'active', 0),
+(40, 35, 3, '2026-01-01', '2026-04-01', 'active', 1),
+(41, 36, 5, '2026-02-01', '2026-05-01', 'active', 0),
+(42, 37, 3, '2026-01-15', '2026-04-15', 'active', 1),
+(43, 38, 2, '2026-03-01', '2026-06-01', 'active', 1),
+(44, 39, 3, '2026-02-01', '2026-05-01', 'active', 1),
+(45, 40, 4, '2026-01-01', '2026-04-01', 'active', 1),
+(46, 41, 1, '2026-03-01', '2026-04-01', 'active', 0),
+(47, 42, 3, '2026-02-01', '2026-05-01', 'active', 1),
+(48, 43, 2, '2026-01-15', '2026-04-15', 'active', 0),
+(49, 44, 5, '2026-03-01', '2026-06-01', 'active', 1),
+(50, 45, 3, '2026-02-01', '2026-05-01', 'active', 1),
+(51, 46, 2, '2026-01-01', '2026-04-01', 'active', 0),
+(52, 47, 3, '2026-02-15', '2026-05-15', 'active', 1),
+(53, 48, 4, '2026-01-01', '2026-04-01', 'active', 1),
+(54, 49, 3, '2026-03-01', '2026-06-01', 'active', 0),
+(55, 50, 5, '2026-02-01', '2026-05-01', 'active', 1),
+(56, 51, 1, '2026-03-01', '2026-04-01', 'active', 0),
+(57, 52, 3, '2026-01-15', '2026-04-15', 'active', 1),
+(58, 53, 2, '2026-02-01', '2026-05-01', 'active', 0),
+(59, 54, 3, '2026-01-01', '2026-04-01', 'active', 1),
+(60, 55, 4, '2026-02-15', '2026-05-15', 'active', 1),
+(61, 56, 3, '2026-03-01', '2026-06-01', 'active', 1),
+(62, 57, 2, '2026-01-01', '2026-04-01', 'active', 0),
+(63, 58, 5, '2026-02-01', '2026-05-01', 'active', 1),
+(64, 59, 3, '2026-01-15', '2026-04-15', 'active', 0),
+(65, 60, 3, '2026-03-01', '2026-06-01', 'active', 1),
+-- Expired / cancelled for variety
+(66, 21, 1, '2025-06-01', '2025-09-01', 'expired', 0),
+(67, 25, 2, '2025-08-01', '2025-11-01', 'expired', 0),
+(68, 30, 3, '2025-09-01', '2025-12-01', 'cancelled', 0),
+(69, 35, 1, '2025-07-01', '2025-10-01', 'expired', 0),
+(70, 40, 2, '2025-10-01', '2026-01-01', 'expired', 0),
+(71, 45, 1, '2025-06-01', '2025-09-01', 'expired', 0),
+(72, 50, 2, '2025-11-01', '2026-02-01', 'cancelled', 0),
+(73, 55, 1, '2025-08-01', '2025-11-01', 'expired', 0),
+(74, 22, 5, '2025-09-01', '2025-12-01', 'paused', 0),
+(75, 60, 1, '2025-07-01', '2025-10-01', 'expired', 0);
+SET IDENTITY_INSERT USER_SUBSCRIPTIONS OFF;
+GO
+
+-- New PAYMENTS (60 records, TXN_031 to TXN_090)
+INSERT INTO PAYMENTS (subscription_id, amount, payment_date, status, transaction_id) VALUES
+(66, 0.01, '2025-06-01 08:00:00', 'completed', 'TXN_031'),
+(67, 4.99, '2025-08-01 09:00:00', 'completed', 'TXN_032'),
+(68, 9.99, '2025-09-01 10:00:00', 'completed', 'TXN_033'),
+(69, 0.01, '2025-07-01 11:00:00', 'completed', 'TXN_034'),
+(70, 4.99, '2025-10-01 12:00:00', 'completed', 'TXN_035'),
+(71, 0.01, '2025-06-01 13:00:00', 'completed', 'TXN_036'),
+(72, 4.99, '2025-11-01 14:00:00', 'completed', 'TXN_037'),
+(73, 0.01, '2025-08-01 15:00:00', 'completed', 'TXN_038'),
+(74, 2.99, '2025-09-01 16:00:00', 'completed', 'TXN_039'),
+(75, 0.01, '2025-07-01 17:00:00', 'completed', 'TXN_040'),
+(26, 9.99, '2026-01-01 08:00:00', 'completed', 'TXN_041'),
+(26, 9.99, '2026-02-01 08:00:00', 'completed', 'TXN_042'),
+(26, 9.99, '2026-03-01 08:00:00', 'completed', 'TXN_043'),
+(27, 4.99, '2026-02-01 09:00:00', 'completed', 'TXN_044'),
+(27, 4.99, '2026-03-01 09:00:00', 'completed', 'TXN_045'),
+(28, 2.99, '2026-01-15 10:00:00', 'completed', 'TXN_046'),
+(28, 2.99, '2026-02-15 10:00:00', 'completed', 'TXN_047'),
+(29, 9.99, '2026-02-01 11:00:00', 'completed', 'TXN_048'),
+(30, 14.99, '2026-01-01 12:00:00', 'completed', 'TXN_049'),
+(30, 14.99, '2026-02-01 12:00:00', 'completed', 'TXN_050'),
+(31, 9.99, '2026-03-01 13:00:00', 'completed', 'TXN_051'),
+(32, 4.99, '2026-02-15 14:00:00', 'completed', 'TXN_052'),
+(33, 9.99, '2026-01-01 15:00:00', 'completed', 'TXN_053'),
+(33, 9.99, '2026-02-01 15:00:00', 'completed', 'TXN_054'),
+(34, 2.99, '2026-03-01 16:00:00', 'completed', 'TXN_055'),
+(36, 9.99, '2026-02-01 08:30:00', 'completed', 'TXN_056'),
+(37, 9.99, '2026-01-15 09:30:00', 'completed', 'TXN_057'),
+(38, 14.99, '2026-02-01 10:30:00', 'completed', 'TXN_058'),
+(39, 4.99, '2026-03-01 11:30:00', 'completed', 'TXN_059'),
+(40, 9.99, '2026-01-01 12:30:00', 'completed', 'TXN_060'),
+(40, 9.99, '2026-02-01 12:30:00', 'completed', 'TXN_061'),
+(41, 2.99, '2026-02-01 13:30:00', 'completed', 'TXN_062'),
+(42, 9.99, '2026-01-15 14:30:00', 'completed', 'TXN_063'),
+(43, 4.99, '2026-03-01 15:30:00', 'completed', 'TXN_064'),
+(44, 9.99, '2026-02-01 16:30:00', 'completed', 'TXN_065'),
+(45, 14.99, '2026-01-01 08:15:00', 'completed', 'TXN_066'),
+(47, 9.99, '2026-02-01 09:15:00', 'completed', 'TXN_067'),
+(48, 4.99, '2026-01-15 10:15:00', 'completed', 'TXN_068'),
+(49, 2.99, '2026-03-01 11:15:00', 'completed', 'TXN_069'),
+(50, 9.99, '2026-02-01 12:15:00', 'completed', 'TXN_070'),
+(52, 9.99, '2026-02-15 13:15:00', 'completed', 'TXN_071'),
+(53, 14.99, '2026-01-01 14:15:00', 'completed', 'TXN_072'),
+(53, 14.99, '2026-02-01 14:15:00', 'completed', 'TXN_073'),
+(54, 9.99, '2026-03-01 15:15:00', 'completed', 'TXN_074'),
+(55, 2.99, '2026-02-01 16:15:00', 'completed', 'TXN_075'),
+(57, 9.99, '2026-01-15 08:45:00', 'completed', 'TXN_076'),
+(58, 4.99, '2026-02-01 09:45:00', 'completed', 'TXN_077'),
+(59, 9.99, '2026-01-01 10:45:00', 'completed', 'TXN_078'),
+(60, 14.99, '2026-02-15 11:45:00', 'completed', 'TXN_079'),
+(61, 9.99, '2026-03-01 12:45:00', 'completed', 'TXN_080'),
+(62, 4.99, '2026-01-01 13:45:00', 'completed', 'TXN_081'),
+(63, 2.99, '2026-02-01 14:45:00', 'completed', 'TXN_082'),
+(64, 9.99, '2026-01-15 15:45:00', 'completed', 'TXN_083'),
+(65, 9.99, '2026-03-01 16:45:00', 'completed', 'TXN_084'),
+(29, 9.99, '2026-03-01 11:00:00', 'completed', 'TXN_085'),
+(36, 9.99, '2026-03-01 08:30:00', 'completed', 'TXN_086'),
+(42, 9.99, '2026-02-15 14:30:00', 'completed', 'TXN_087'),
+(44, 9.99, '2026-03-01 16:30:00', 'completed', 'TXN_088'),
+(50, 9.99, '2026-03-01 12:15:00', 'completed', 'TXN_089'),
+(59, 9.99, '2026-02-01 10:45:00', 'failed', 'TXN_090');
+GO
+
+-- New SONG_ARTISTS for songs 46-135 (main + featured)
+INSERT INTO SONG_ARTISTS (song_id, artist_id, role) VALUES
+(46, 21, 'main'), (47, 21, 'main'),
+(48, 22, 'main'), (49, 22, 'main'), (49, 23, 'featured'),
+(50, 23, 'main'), (50, 10, 'featured'), (51, 23, 'main'),
+(52, 24, 'main'), (53, 24, 'main'),
+(54, 25, 'main'), (55, 25, 'main'),
+(56, 26, 'main'), (57, 26, 'main'),
+(58, 27, 'main'), (59, 27, 'main'),
+(60, 28, 'main'), (61, 28, 'main'),
+(62, 29, 'main'), (62, 30, 'featured'), (63, 29, 'main'),
+(64, 30, 'main'), (64, 23, 'featured'), (65, 30, 'main'),
+(66, 31, 'main'), (67, 31, 'main'), (67, 35, 'featured'),
+(68, 32, 'main'), (69, 32, 'main'),
+(70, 33, 'main'), (71, 33, 'main'),
+(72, 34, 'main'), (73, 34, 'main'),
+(74, 35, 'main'), (75, 35, 'main'),
+(76, 36, 'main'), (77, 36, 'main'),
+(78, 37, 'main'), (79, 37, 'main'),
+(80, 38, 'main'), (81, 38, 'main'),
+(82, 39, 'main'), (83, 39, 'main'),
+(84, 40, 'main'), (85, 40, 'main'),
+(86, 41, 'main'), (87, 41, 'main'),
+(88, 42, 'main'), (88, 57, 'featured'), (89, 42, 'main'),
+(90, 43, 'main'), (91, 43, 'main'),
+(92, 44, 'main'), (93, 44, 'main'), (93, 29, 'featured'),
+(94, 45, 'main'), (95, 45, 'main'), (95, 11, 'featured'),
+(96, 46, 'main'), (97, 46, 'main'),
+(98, 47, 'main'), (98, 45, 'featured'), (99, 47, 'main'),
+(100, 48, 'main'), (101, 48, 'main'),
+(102, 49, 'main'), (103, 49, 'main'),
+(104, 50, 'main'), (105, 50, 'main'),
+(106, 51, 'main'), (107, 51, 'main'),
+(108, 52, 'main'), (108, 35, 'featured'), (109, 52, 'main'),
+(110, 53, 'main'), (111, 53, 'main'),
+(112, 54, 'main'), (113, 54, 'main'),
+(114, 55, 'main'), (115, 55, 'main'),
+(116, 56, 'main'), (117, 56, 'main'),
+(118, 57, 'main'), (119, 57, 'main'),
+(120, 58, 'main'), (121, 58, 'main'),
+(122, 59, 'main'), (122, 29, 'featured'), (123, 59, 'main'),
+(124, 60, 'main'), (124, 23, 'featured'), (125, 60, 'main'),
+-- Singles
+(126, 27, 'main'), (126, 45, 'featured'),
+(127, 44, 'main'), (127, 29, 'featured'),
+(128, 42, 'main'),
+(129, 49, 'main'),
+(130, 57, 'main'),
+(131, 21, 'main'), (131, 22, 'featured'),
+(132, 29, 'main'), (132, 58, 'featured'),
+(133, 60, 'main'),
+(134, 45, 'main'), (134, 26, 'featured'),
+(135, 41, 'main');
+GO
+
+-- New GENRES (21-30)
+SET IDENTITY_INSERT GENRES ON;
+INSERT INTO GENRES (genre_id, genre_name, description) VALUES
+(21, N'Bolero', N'Nhạc Bolero trữ tình'),
+(22, N'Chill', N'Nhạc Chill thư giãn'),
+(23, N'Dance', N'Nhạc Dance sôi động'),
+(24, N'Drill', N'Nhạc Drill hiện đại'),
+(25, N'Phonk', N'Nhạc Phonk'),
+(26, N'Trap', N'Nhạc Trap'),
+(27, N'Alternative', N'Nhạc Alternative'),
+(28, N'Punk', N'Nhạc Punk Rock'),
+(29, N'Disco', N'Nhạc Disco'),
+(30, N'Synthwave', N'Nhạc Synthwave/Retro');
+SET IDENTITY_INSERT GENRES OFF;
+GO
+
+-- New SONG_GENRES for songs 46-135
+INSERT INTO SONG_GENRES (song_id, genre_id) VALUES
+(46, 3), (46, 1), (46, 23),
+(47, 3), (47, 1),
+(48, 3), (48, 1),
+(49, 3), (49, 1), (49, 8),
+(50, 3), (50, 8), (50, 26),
+(51, 3), (51, 8),
+(52, 3), (52, 1), (52, 22),
+(53, 3), (53, 1),
+(54, 3), (54, 12),
+(55, 3), (55, 12), (55, 22),
+(56, 3), (56, 4),
+(57, 3), (57, 1),
+(58, 3), (58, 4),
+(59, 3), (59, 1),
+(60, 3), (60, 1),
+(61, 3), (61, 4),
+(62, 3), (62, 5),
+(63, 3), (63, 4),
+(64, 3), (64, 8),
+(65, 3), (65, 8),
+(66, 1), (66, 5), (66, 30),
+(67, 1), (67, 5),
+(68, 1), (68, 23), (68, 29),
+(69, 1), (69, 23),
+(70, 1), (70, 27),
+(71, 1), (71, 27),
+(72, 1), (72, 12),
+(73, 1),
+(74, 1), (74, 5),
+(75, 1), (75, 8),
+(76, 8), (76, 1),
+(77, 8), (77, 23),
+(78, 1), (78, 27),
+(79, 1), (79, 8),
+(80, 1), (80, 5), (80, 23),
+(81, 1), (81, 23), (81, 20),
+(82, 7), (82, 1),
+(83, 7), (83, 1),
+(84, 7), (84, 1), (84, 23),
+(85, 7), (85, 1),
+(86, 3), (86, 21),
+(87, 3), (87, 21),
+(88, 3), (88, 1),
+(89, 3), (89, 4),
+(90, 3), (90, 1), (90, 23),
+(91, 3), (91, 4),
+(92, 3), (92, 4),
+(93, 3), (93, 1),
+(94, 3), (94, 18), (94, 4),
+(95, 3), (95, 4),
+(96, 3), (96, 4),
+(97, 3), (97, 4),
+(98, 3), (98, 2),
+(99, 3), (99, 4),
+(100, 7), (100, 1), (100, 23),
+(101, 7), (101, 1),
+(102, 2), (102, 1), (102, 27),
+(103, 2), (103, 27),
+(104, 2), (104, 27), (104, 1),
+(105, 2), (105, 1), (105, 4),
+(106, 1), (106, 5), (106, 23),
+(107, 1), (107, 4),
+(108, 1), (108, 23), (108, 6),
+(109, 1), (109, 4),
+(110, 1), (110, 23),
+(111, 1), (111, 4), (111, 19),
+(112, 1), (112, 4),
+(113, 1), (113, 27),
+(114, 14), (114, 8),
+(115, 14), (115, 8),
+(116, 3), (116, 1),
+(117, 3), (117, 1),
+(118, 3), (118, 4),
+(119, 3), (119, 1),
+(120, 3), (120, 4),
+(121, 3), (121, 4),
+(122, 3), (122, 1),
+(123, 3), (123, 1),
+(124, 3), (124, 8), (124, 22),
+(125, 3), (125, 22),
+(126, 3), (126, 1),
+(127, 3), (127, 1), (127, 22),
+(128, 3), (128, 4),
+(129, 2), (129, 1),
+(130, 3), (130, 4),
+(131, 3), (131, 1), (131, 6),
+(132, 3), (132, 5),
+(133, 3), (133, 1), (133, 23),
+(134, 3), (134, 18), (134, 4),
+(135, 3), (135, 21);
+GO
+
+-- New PLAYLISTS (21-60)
+SET IDENTITY_INSERT PLAYLISTS ON;
+INSERT INTO PLAYLISTS (playlist_id, user_id, name, description, is_public, created_at) VALUES
+(21, 21, N'Nhạc Làm Việc', N'Nhạc nhẹ nhàng nghe khi làm việc', 1, '2026-01-25 09:00:00'),
+(22, 22, N'Vpop Mới 2026', N'Tổng hợp Vpop mới nhất', 1, '2026-02-02 10:00:00'),
+(23, 23, N'Rap Việt Fire', N'Những bài Rap Việt cháy nhất', 1, '2026-01-20 11:00:00'),
+(24, 24, N'Gen-Z Playlist', N'Nhạc Gen-Z hot trend', 1, '2026-02-10 12:00:00'),
+(25, 25, N'Indie Yêu Thích', N'Nhạc Indie chill buổi tối', 0, '2026-02-15 13:00:00'),
+(26, 26, N'Nhạc Tâm Trạng', N'Nhạc buồn cho những ngày mưa', 1, '2026-03-01 14:00:00'),
+(27, 27, N'Pop Hits 2026', N'Ca khúc Pop quốc tế hay nhất', 1, '2026-01-18 15:00:00'),
+(28, 28, N'Acoustic Sáng Sớm', N'Nhạc Acoustic nhẹ nhàng', 0, '2026-02-05 08:00:00'),
+(29, 29, N'R&B Night', N'Nhạc R&B cho đêm dài', 1, '2026-02-20 19:00:00'),
+(30, 30, N'Hip-Hop Bangz', N'Nhạc Hip-Hop sôi động', 1, '2026-03-05 20:00:00'),
+(31, 31, N'Kpop Mix', N'Tuyển tập Kpop hay nhất', 1, '2026-01-22 09:00:00'),
+(32, 32, N'US-UK Collection', N'Nhạc US-UK tuyển chọn', 1, '2026-02-08 10:00:00'),
+(33, 33, N'Đi Cafe', N'Nhạc cafe chill vibes', 1, '2026-02-25 11:00:00'),
+(34, 34, N'Drive Mix', N'Nhạc nghe khi lái xe', 1, '2026-03-02 12:00:00'),
+(35, 35, N'Ballad Việt Hay', N'Tuyển tập Ballad Việt hay nhất', 1, '2026-01-28 13:00:00'),
+(36, 36, N'EDM Festival', N'Nhạc EDM sôi động lễ hội', 1, '2026-02-14 14:00:00'),
+(37, 37, N'Nhạc Xưa Hay', N'Nhạc xưa nghe lại vẫn hay', 0, '2026-02-22 15:00:00'),
+(38, 38, N'Bolero Collection', N'Tuyển tập Bolero hay nhất', 1, '2026-03-06 16:00:00'),
+(39, 39, N'Nhạc Quốc Tế', N'Nhạc quốc tế tuyển chọn', 1, '2026-01-30 17:00:00'),
+(40, 40, N'Rock Anthems', N'Nhạc Rock kinh điển', 1, '2026-02-18 18:00:00'),
+(41, 41, N'Tập Gym', N'Nhạc tập gym beat mạnh', 1, '2026-03-08 07:00:00'),
+(42, 42, N'Ngủ Ngon', N'Nhạc ru ngủ nhẹ nhàng', 0, '2026-02-12 21:00:00'),
+(43, 43, N'Karaoke Night', N'Nhạc karaoke vui vẻ', 1, '2026-03-10 19:00:00'),
+(44, 44, N'Nhạc Phim Hay', N'Nhạc phim Việt hay nhất', 1, '2026-01-15 10:00:00'),
+(45, 45, N'Latin Vibes', N'Nhạc Latin sôi động', 1, '2026-02-28 11:00:00'),
+(46, 46, N'Nhạc Trẻ 2020s', N'Nhạc trẻ thập niên 2020', 1, '2026-03-12 12:00:00'),
+(47, 47, N'Duet Songs', N'Nhạc song ca hay nhất', 1, '2026-01-08 13:00:00'),
+(48, 48, N'Friday Night', N'Nhạc cho tối thứ 6', 1, '2026-02-07 14:00:00'),
+(49, 49, N'Morning Coffee', N'Nhạc cafe buổi sáng', 0, '2026-02-16 08:00:00'),
+(50, 50, N'Trending Now', N'Nhạc đang thịnh hành', 1, '2026-03-14 15:00:00'),
+(51, 51, N'Admin Favorites', N'Nhạc yêu thích của admin', 0, '2026-01-05 16:00:00'),
+(52, 53, N'Lo-fi Study', N'Nhạc Lo-fi học bài', 1, '2026-02-11 17:00:00'),
+(53, 54, N'Dance Floor', N'Nhạc nhảy sôi động', 1, '2026-03-03 18:00:00'),
+(54, 55, N'Summer Hits', N'Nhạc mùa hè', 1, '2026-02-19 19:00:00'),
+(55, 56, N'Vpop Classic', N'Nhạc Vpop kinh điển', 1, '2026-01-12 20:00:00'),
+(56, 57, N'Nhạc Mới Mỗi Ngày', N'Cập nhật nhạc mới hàng ngày', 1, '2026-03-07 08:00:00'),
+(57, 58, N'Healing Music', N'Nhạc chữa lành tâm hồn', 0, '2026-02-23 09:00:00'),
+(58, 59, N'Girls Power', N'Nhạc nữ ca sĩ hay nhất', 1, '2026-03-09 10:00:00'),
+(59, 60, N'Chill Weekend', N'Nhạc cuối tuần thư giãn', 1, '2026-02-26 11:00:00'),
+(60, 21, N'Workout 2026', N'Nhạc tập luyện năng lượng cao', 1, '2026-03-15 07:00:00');
+SET IDENTITY_INSERT PLAYLISTS OFF;
+GO
+
+-- New PLAYLIST_SONGS (~160 entries, 4 songs per new playlist)
+INSERT INTO PLAYLIST_SONGS (playlist_id, song_id, position) VALUES
+(21, 55, 1), (21, 105, 2), (21, 34, 3), (21, 94, 4),
+(22, 46, 1), (22, 48, 2), (22, 52, 3), (22, 60, 4),
+(23, 50, 1), (23, 51, 2), (23, 64, 3), (23, 76, 4),
+(24, 52, 1), (24, 53, 2), (24, 46, 3), (24, 48, 4),
+(25, 54, 1), (25, 55, 2), (25, 34, 3), (25, 72, 4),
+(26, 56, 1), (26, 58, 2), (26, 63, 3), (26, 112, 4),
+(27, 66, 1), (27, 68, 2), (27, 72, 3), (27, 74, 4),
+(28, 94, 1), (28, 95, 2), (28, 105, 3), (28, 134, 4),
+(29, 62, 1), (29, 63, 2), (29, 80, 3), (29, 111, 4),
+(30, 50, 1), (30, 64, 2), (30, 65, 3), (30, 75, 4),
+(31, 82, 1), (31, 83, 2), (31, 84, 3), (31, 100, 4),
+(32, 66, 1), (32, 69, 2), (32, 78, 3), (32, 109, 4),
+(33, 7, 1), (33, 55, 2), (33, 127, 3), (33, 134, 4),
+(34, 102, 1), (34, 66, 2), (34, 76, 3), (34, 38, 4),
+(35, 58, 1), (35, 61, 2), (35, 89, 3), (35, 120, 4),
+(36, 3, 1), (36, 68, 2), (36, 90, 3), (36, 108, 4),
+(37, 96, 1), (37, 97, 2), (37, 86, 3), (37, 87, 4),
+(38, 86, 1), (38, 87, 2), (38, 135, 3), (38, 97, 4),
+(39, 66, 1), (39, 74, 2), (39, 107, 3), (39, 112, 4),
+(40, 102, 1), (40, 103, 2), (40, 104, 3), (40, 98, 4),
+(41, 36, 1), (41, 102, 2), (41, 9, 3), (41, 68, 4),
+(42, 18, 1), (42, 134, 2), (42, 95, 3), (42, 111, 4),
+(43, 46, 1), (43, 90, 2), (43, 122, 3), (43, 88, 4),
+(44, 42, 1), (44, 94, 2), (44, 120, 3), (44, 118, 4),
+(45, 114, 1), (45, 115, 2), (45, 77, 3), (45, 84, 4),
+(46, 46, 1), (46, 60, 2), (46, 92, 3), (46, 124, 4),
+(47, 95, 1), (47, 122, 2), (47, 132, 3), (47, 88, 4),
+(48, 68, 1), (48, 81, 2), (48, 110, 3), (48, 46, 4),
+(49, 105, 1), (49, 94, 2), (49, 55, 3), (49, 34, 4),
+(50, 66, 1), (50, 46, 2), (50, 72, 3), (50, 112, 4),
+(51, 1, 1), (51, 17, 2), (51, 66, 3), (51, 104, 4),
+(52, 55, 1), (52, 23, 2), (52, 127, 3), (52, 105, 4),
+(53, 68, 1), (53, 90, 2), (53, 3, 3), (53, 84, 4),
+(54, 77, 1), (54, 79, 2), (54, 114, 3), (54, 69, 4),
+(55, 96, 1), (55, 26, 2), (55, 118, 3), (55, 58, 4),
+(56, 124, 1), (56, 52, 2), (56, 60, 3), (56, 122, 4),
+(57, 105, 1), (57, 94, 2), (57, 56, 3), (57, 18, 4),
+(58, 74, 1), (58, 80, 2), (58, 90, 3), (58, 106, 4),
+(59, 7, 1), (59, 55, 2), (59, 125, 3), (59, 23, 4),
+(60, 102, 1), (60, 36, 2), (60, 9, 3), (60, 50, 4);
+GO
+
+-- New SONG_COMMENTS (IDs 35-99, 101-105 = 70 comments)
+SET IDENTITY_INSERT SONG_COMMENTS ON;
+INSERT INTO SONG_COMMENTS (comment_id, user_id, song_id, comment_text, timestamp_position, created_at) VALUES
+(35, 21, 46, N'See Tình hay quá trời!', 30, '2026-03-01 08:00:00'),
+(36, 22, 46, N'HTL quá đỉnh, nghe hoài không chán', 60, '2026-03-01 09:00:00'),
+(37, 23, 50, N'Bigcityboi flow cực chất', 45, '2026-03-02 10:00:00'),
+(38, 24, 52, N'Wren Evans phong cách quá lạ', 50, '2026-03-02 11:00:00'),
+(39, 25, 54, N'Phùng Khánh Linh hát hay lắm', 70, '2026-03-03 12:00:00'),
+(40, 26, 56, N'Yêu Xa nghe buồn quá', 80, '2026-03-03 13:00:00'),
+(41, 27, 58, N'Sau Tất Cả - bài hát kinh điển', 90, '2026-03-04 14:00:00'),
+(42, 28, 60, N'MONO hát hay quá, Waiting For You', 40, '2026-03-04 15:00:00'),
+(43, 29, 62, N'Thằng Điên nghe là khóc', 60, '2026-03-05 16:00:00'),
+(44, 30, 64, N'Suboi rap quá đỉnh', 35, '2026-03-05 17:00:00'),
+(45, 31, 66, N'Blinding Lights kinh điển', 50, '2026-03-06 08:00:00'),
+(46, 32, 68, N'Don''t Start Now cực catchy', 40, '2026-03-06 09:00:00'),
+(47, 33, 70, N'Bad Guy nghe phê quá', 55, '2026-03-07 10:00:00'),
+(48, 34, 72, N'As It Was là bài hay nhất', 30, '2026-03-07 11:00:00'),
+(49, 35, 74, N'Ariana Grande giọng quá khủng', 45, '2026-03-08 12:00:00'),
+(50, 36, 76, N'God''s Plan nghe hoài không chán', 60, '2026-03-08 13:00:00'),
+(51, 37, 78, N'Circles melody cực hay', 70, '2026-03-09 14:00:00'),
+(52, 38, 80, N'Kiss Me More summer vibes!', 40, '2026-03-09 15:00:00'),
+(53, 39, 82, N'IU hát Lilac quá đẹp', 50, '2026-03-10 16:00:00'),
+(54, 40, 84, N'TWICE Alcohol-Free nghe là nhảy', 35, '2026-03-10 17:00:00'),
+(55, 41, 86, N'Bolero hay quá chừng', 80, '2026-03-11 08:00:00'),
+(56, 42, 88, N'Bảo Anh hát Như Lời Đồn quá cảm xúc', 55, '2026-03-11 09:00:00'),
+(57, 43, 90, N'Đóa Hoa Hồng Chi Pu slay!', 40, '2026-03-12 10:00:00'),
+(58, 44, 92, N'Phí Duyên nghe buồn man mác', 65, '2026-03-12 11:00:00'),
+(59, 45, 94, N'Tháng Tư kinh điển', 90, '2026-03-13 12:00:00'),
+(60, 46, 96, N'Lam Trường huyền thoại', 50, '2026-03-13 13:00:00'),
+(61, 47, 98, N'Tuấn Hưng hát quá hay', 60, '2026-03-14 14:00:00'),
+(62, 48, 100, N'EXO Love Shot cực đỉnh', 40, '2026-03-14 15:00:00'),
+(63, 49, 102, N'Believer tuyệt vời luôn', 55, '2026-03-15 08:00:00'),
+(64, 50, 104, N'Viva La Vida kinh điển', 70, '2026-03-15 09:00:00'),
+(65, 21, 66, N'Weeknd quá tài năng', 80, '2026-03-01 18:00:00'),
+(66, 22, 68, N'Dua Lipa nữ hoàng Pop', 45, '2026-03-02 19:00:00'),
+(67, 23, 72, N'Harry Styles quá đẹp trai lại hát hay', 30, '2026-03-03 20:00:00'),
+(68, 24, 74, N'Ariana quá slay!', 55, '2026-03-04 21:00:00'),
+(69, 25, 78, N'Post Malone vibe chill', 65, '2026-03-05 08:00:00'),
+(70, 26, 82, N'IU mãi là nữ hoàng', 40, '2026-03-06 09:00:00'),
+(71, 27, 106, N'Beyoncé Break My Soul quá đỉnh', 50, '2026-03-07 10:00:00'),
+(72, 28, 108, N'Rain On Me ft. Ariana tuyệt vời', 35, '2026-03-08 11:00:00'),
+(73, 29, 110, N'Unholy beat quá ghiền', 45, '2026-03-09 12:00:00'),
+(74, 30, 112, N'Drivers License nghe buồn quá', 80, '2026-03-10 13:00:00'),
+(75, 1, 46, N'See Tình đỉnh nóc kịch trần!', 25, '2026-03-11 14:00:00'),
+(76, 2, 58, N'Erik hát Sau Tất Cả cảm xúc quá', 50, '2026-03-12 15:00:00'),
+(77, 3, 66, N'The Weeknd giọng quá đẹp', 70, '2026-03-13 16:00:00'),
+(78, 4, 92, N'Soobin hát Phí Duyên hay lắm', 45, '2026-03-14 17:00:00'),
+(79, 5, 102, N'Believer nghe lúc tập gym cực phê', 30, '2026-03-15 18:00:00'),
+(80, 21, 120, N'Em Gái Mưa nghe là nhớ tuổi thơ', 60, '2026-03-01 19:00:00'),
+(81, 22, 122, N'Người Lạ Ơi hay quá trời ơi', 50, '2026-03-02 20:00:00'),
+(82, 23, 124, N'Tăng Duy Tân phong cách quá lạ', 40, '2026-03-03 21:00:00'),
+(83, 24, 109, N'Shallow Lady Gaga quá khủng', 75, '2026-03-04 08:00:00'),
+(84, 25, 105, N'Fix You nghe là khóc', 90, '2026-03-05 09:00:00'),
+(85, 26, 113, N'Good 4 U Olivia quá cháy', 35, '2026-03-06 10:00:00'),
+(86, 27, 114, N'Bad Bunny nhạc Latin cực cuốn', 50, '2026-03-07 11:00:00'),
+(87, 28, 118, N'Người Ấy bài hát kinh điển TTB', 65, '2026-03-08 12:00:00'),
+(88, 29, 95, N'Hà Anh Tuấn ft. Mỹ Tâm tuyệt đỉnh', 80, '2026-03-09 13:00:00'),
+(89, 30, 93, N'Đi Để Trở Về Soobin quá hay', 45, '2026-03-10 14:00:00'),
+(90, 31, 46, N'See Tình viral toàn cầu xứng đáng!', 55, '2026-03-11 15:00:00'),
+(91, 32, 50, N'Binz Bigcityboi quá chất', 40, '2026-03-12 16:00:00'),
+(92, 33, 60, N'MONO giọng quá đẹp', 60, '2026-03-13 17:00:00'),
+(93, 34, 62, N'JustaTee R&B chill quá', 50, '2026-03-14 18:00:00'),
+(94, 35, 86, N'Bolero Lý Hải nghe lại vẫn hay', 70, '2026-03-15 19:00:00'),
+(95, 36, 88, N'Bảo Anh giọng quá ngọt', 45, '2026-03-16 08:00:00'),
+(96, 37, 90, N'Chi Pu càng ngày càng hát hay', 30, '2026-03-16 09:00:00'),
+(97, 38, 104, N'Coldplay bất hủ, Viva La Vida!', 55, '2026-03-16 10:00:00'),
+(98, 39, 107, N'Halo Beyoncé tuyệt vời', 40, '2026-03-16 11:00:00'),
+(99, 40, 111, N'Stay With Me nghe hoài không chán', 65, '2026-03-16 12:00:00'),
+(101, 41, 116, N'Thái Vũ sáng tạo lắm', 50, '2026-03-16 13:00:00'),
+(102, 42, 126, N'Erik Là 1 Thằng Con Trai hay quá', 35, '2026-03-16 14:00:00'),
+(103, 43, 131, N'Mashup Vpop nghe đã lắm!', 40, '2026-03-16 15:00:00'),
+(104, 44, 133, N'Yêu Là Cưới vui quá!', 25, '2026-03-16 16:00:00'),
+(105, 45, 135, N'Thương Em Lý Hải trữ tình', 60, '2026-03-16 17:00:00');
+SET IDENTITY_INSERT SONG_COMMENTS OFF;
+GO
+
+-- New COMMENT_LIKES (~70 entries, using new users on new comments + new users on old comments)
+INSERT INTO COMMENT_LIKES (user_id, comment_id, liked_at) VALUES
+(22, 35, '2026-03-02 08:00:00'), (23, 35, '2026-03-02 09:00:00'), (24, 35, '2026-03-02 10:00:00'),
+(21, 36, '2026-03-02 11:00:00'), (25, 36, '2026-03-02 12:00:00'),
+(21, 37, '2026-03-03 08:00:00'), (22, 37, '2026-03-03 09:00:00'),
+(21, 38, '2026-03-03 10:00:00'), (23, 38, '2026-03-03 11:00:00'),
+(21, 39, '2026-03-04 08:00:00'), (24, 39, '2026-03-04 09:00:00'),
+(22, 40, '2026-03-04 10:00:00'), (25, 40, '2026-03-04 11:00:00'),
+(23, 41, '2026-03-05 08:00:00'), (26, 41, '2026-03-05 09:00:00'),
+(24, 42, '2026-03-05 10:00:00'), (27, 42, '2026-03-05 11:00:00'),
+(25, 43, '2026-03-06 08:00:00'), (28, 43, '2026-03-06 09:00:00'),
+(26, 44, '2026-03-06 10:00:00'), (29, 44, '2026-03-06 11:00:00'),
+(27, 45, '2026-03-07 08:00:00'), (30, 45, '2026-03-07 09:00:00'),
+(28, 46, '2026-03-07 10:00:00'), (31, 46, '2026-03-07 11:00:00'),
+(29, 47, '2026-03-08 08:00:00'), (32, 47, '2026-03-08 09:00:00'),
+(30, 48, '2026-03-08 10:00:00'), (33, 48, '2026-03-08 11:00:00'),
+(31, 49, '2026-03-09 08:00:00'), (34, 49, '2026-03-09 09:00:00'),
+(32, 50, '2026-03-09 10:00:00'), (35, 50, '2026-03-09 11:00:00'),
+(33, 51, '2026-03-10 08:00:00'), (36, 51, '2026-03-10 09:00:00'),
+(34, 52, '2026-03-10 10:00:00'), (37, 52, '2026-03-10 11:00:00'),
+(35, 53, '2026-03-11 08:00:00'), (38, 53, '2026-03-11 09:00:00'),
+(36, 54, '2026-03-11 10:00:00'), (39, 54, '2026-03-11 11:00:00'),
+(37, 55, '2026-03-12 08:00:00'), (40, 55, '2026-03-12 09:00:00'),
+(38, 56, '2026-03-12 10:00:00'), (41, 56, '2026-03-12 11:00:00'),
+(39, 57, '2026-03-13 08:00:00'), (42, 57, '2026-03-13 09:00:00'),
+(40, 58, '2026-03-13 10:00:00'), (43, 58, '2026-03-13 11:00:00'),
+(41, 59, '2026-03-14 08:00:00'), (44, 59, '2026-03-14 09:00:00'),
+(42, 60, '2026-03-14 10:00:00'), (45, 60, '2026-03-14 11:00:00'),
+(43, 61, '2026-03-15 08:00:00'), (46, 61, '2026-03-15 09:00:00'),
+(44, 62, '2026-03-15 10:00:00'), (47, 62, '2026-03-15 11:00:00'),
+(45, 63, '2026-03-16 08:00:00'), (48, 63, '2026-03-16 09:00:00'),
+(21, 65, '2026-03-02 13:00:00'), (22, 65, '2026-03-02 14:00:00'),
+(23, 70, '2026-03-07 13:00:00'), (24, 70, '2026-03-07 14:00:00'),
+(25, 75, '2026-03-12 13:00:00'), (26, 75, '2026-03-12 14:00:00'),
+(27, 80, '2026-03-02 15:00:00'), (28, 80, '2026-03-02 16:00:00'),
+(29, 85, '2026-03-07 15:00:00'), (30, 85, '2026-03-07 16:00:00'),
+-- New users liking existing comments
+(21, 1, '2026-03-10 08:00:00'), (22, 2, '2026-03-10 09:00:00'),
+(23, 3, '2026-03-10 10:00:00'), (24, 4, '2026-03-10 11:00:00'),
+(25, 5, '2026-03-10 12:00:00'), (26, 6, '2026-03-10 13:00:00');
+GO
+
+-- New SONG_LIKES (~100 entries, new users + existing users on new songs)
+INSERT INTO SONG_LIKES (user_id, song_id, liked_at) VALUES
+-- New users liking old songs
+(21, 1, '2026-03-01 08:00:00'), (21, 3, '2026-03-01 09:00:00'), (21, 9, '2026-03-01 10:00:00'),
+(22, 1, '2026-03-02 08:00:00'), (22, 7, '2026-03-02 09:00:00'), (22, 15, '2026-03-02 10:00:00'),
+(23, 4, '2026-03-03 08:00:00'), (23, 9, '2026-03-03 09:00:00'), (23, 17, '2026-03-03 10:00:00'),
+(24, 1, '2026-03-04 08:00:00'), (24, 12, '2026-03-04 09:00:00'), (24, 20, '2026-03-04 10:00:00'),
+(25, 6, '2026-03-05 08:00:00'), (25, 15, '2026-03-05 09:00:00'), (25, 22, '2026-03-05 10:00:00'),
+(26, 3, '2026-03-06 08:00:00'), (26, 17, '2026-03-06 09:00:00'),
+(27, 1, '2026-03-07 08:00:00'), (27, 9, '2026-03-07 09:00:00'),
+(28, 4, '2026-03-08 08:00:00'), (28, 20, '2026-03-08 09:00:00'),
+(29, 7, '2026-03-09 08:00:00'), (29, 12, '2026-03-09 09:00:00'),
+(30, 1, '2026-03-10 08:00:00'), (30, 15, '2026-03-10 09:00:00'),
+-- All users liking new songs
+(1, 46, '2026-03-01 10:00:00'), (2, 46, '2026-03-02 10:00:00'), (3, 46, '2026-03-03 10:00:00'),
+(21, 46, '2026-03-04 10:00:00'), (22, 46, '2026-03-05 10:00:00'),
+(1, 66, '2026-03-06 10:00:00'), (2, 66, '2026-03-07 10:00:00'), (3, 66, '2026-03-08 10:00:00'),
+(4, 66, '2026-03-09 10:00:00'), (21, 66, '2026-03-10 10:00:00'),
+(1, 58, '2026-03-01 11:00:00'), (2, 58, '2026-03-02 11:00:00'),
+(1, 72, '2026-03-03 11:00:00'), (2, 72, '2026-03-04 11:00:00'), (23, 72, '2026-03-05 11:00:00'),
+(1, 82, '2026-03-06 11:00:00'), (24, 82, '2026-03-07 11:00:00'),
+(1, 102, '2026-03-08 11:00:00'), (2, 102, '2026-03-09 11:00:00'), (25, 102, '2026-03-10 11:00:00'),
+(1, 50, '2026-03-01 12:00:00'), (23, 50, '2026-03-02 12:00:00'),
+(1, 52, '2026-03-03 12:00:00'), (24, 52, '2026-03-04 12:00:00'),
+(1, 60, '2026-03-05 12:00:00'), (28, 60, '2026-03-06 12:00:00'),
+(1, 68, '2026-03-07 12:00:00'), (32, 68, '2026-03-08 12:00:00'),
+(1, 74, '2026-03-09 12:00:00'), (35, 74, '2026-03-10 12:00:00'),
+(1, 76, '2026-03-11 12:00:00'), (36, 76, '2026-03-12 12:00:00'),
+(1, 80, '2026-03-13 12:00:00'), (38, 80, '2026-03-14 12:00:00'),
+(1, 84, '2026-03-15 12:00:00'), (40, 84, '2026-03-16 12:00:00'),
+(1, 92, '2026-03-01 13:00:00'), (44, 92, '2026-03-02 13:00:00'),
+(1, 104, '2026-03-03 13:00:00'), (50, 104, '2026-03-04 13:00:00'),
+(1, 108, '2026-03-05 13:00:00'), (52, 108, '2026-03-06 13:00:00'),
+(1, 112, '2026-03-07 13:00:00'), (54, 112, '2026-03-08 13:00:00'),
+(1, 120, '2026-03-09 13:00:00'), (58, 120, '2026-03-10 13:00:00'),
+(1, 122, '2026-03-11 13:00:00'), (59, 122, '2026-03-12 13:00:00'),
+(1, 124, '2026-03-13 13:00:00'), (60, 124, '2026-03-14 13:00:00'),
+(31, 66, '2026-03-11 14:00:00'), (32, 72, '2026-03-12 14:00:00'),
+(33, 70, '2026-03-13 14:00:00'), (34, 78, '2026-03-14 14:00:00'),
+(6, 46, '2026-03-15 14:00:00'), (7, 46, '2026-03-16 14:00:00'),
+(8, 66, '2026-03-15 15:00:00'), (9, 72, '2026-03-16 15:00:00'),
+(10, 102, '2026-03-15 16:00:00');
+GO
+
+-- New USER_SONGS (~300 listen history entries)
+-- New users (21-60) listening to various songs
+INSERT INTO USER_SONGS (user_id, song_id, listened_at) VALUES
+(21, 46, '2026-03-01 08:00:00'), (21, 46, '2026-03-02 09:00:00'), (21, 46, '2026-03-05 10:00:00'),
+(21, 1, '2026-03-01 10:00:00'), (21, 3, '2026-03-02 11:00:00'), (21, 9, '2026-03-03 12:00:00'),
+(21, 66, '2026-03-04 13:00:00'), (21, 66, '2026-03-06 14:00:00'),
+(22, 46, '2026-03-01 08:00:00'), (22, 48, '2026-03-02 09:00:00'), (22, 68, '2026-03-03 10:00:00'),
+(22, 1, '2026-03-04 11:00:00'), (22, 7, '2026-03-05 12:00:00'), (22, 15, '2026-03-06 13:00:00'),
+(22, 66, '2026-03-07 14:00:00'), (22, 72, '2026-03-08 15:00:00'),
+(23, 50, '2026-03-01 08:00:00'), (23, 50, '2026-03-03 09:00:00'), (23, 51, '2026-03-02 10:00:00'),
+(23, 4, '2026-03-04 11:00:00'), (23, 9, '2026-03-05 12:00:00'), (23, 17, '2026-03-06 13:00:00'),
+(23, 72, '2026-03-07 14:00:00'), (23, 76, '2026-03-08 15:00:00'),
+(24, 52, '2026-03-01 08:00:00'), (24, 53, '2026-03-02 09:00:00'), (24, 46, '2026-03-03 10:00:00'),
+(24, 1, '2026-03-04 11:00:00'), (24, 12, '2026-03-05 12:00:00'), (24, 74, '2026-03-06 13:00:00'),
+(24, 82, '2026-03-07 14:00:00'), (24, 109, '2026-03-08 15:00:00'),
+(25, 54, '2026-03-01 08:00:00'), (25, 55, '2026-03-02 09:00:00'), (25, 34, '2026-03-03 10:00:00'),
+(25, 6, '2026-03-04 11:00:00'), (25, 15, '2026-03-05 12:00:00'), (25, 105, '2026-03-06 13:00:00'),
+(25, 78, '2026-03-07 14:00:00'), (25, 22, '2026-03-08 15:00:00'),
+(26, 56, '2026-03-01 08:00:00'), (26, 57, '2026-03-02 09:00:00'), (26, 3, '2026-03-03 10:00:00'),
+(26, 17, '2026-03-04 11:00:00'), (26, 82, '2026-03-05 12:00:00'), (26, 112, '2026-03-06 13:00:00'),
+(27, 58, '2026-03-01 08:00:00'), (27, 58, '2026-03-04 09:00:00'), (27, 59, '2026-03-02 10:00:00'),
+(27, 1, '2026-03-03 11:00:00'), (27, 9, '2026-03-05 12:00:00'), (27, 106, '2026-03-06 13:00:00'),
+(28, 60, '2026-03-01 08:00:00'), (28, 61, '2026-03-02 09:00:00'), (28, 4, '2026-03-03 10:00:00'),
+(28, 20, '2026-03-04 11:00:00'), (28, 108, '2026-03-05 12:00:00'), (28, 46, '2026-03-06 13:00:00'),
+(29, 62, '2026-03-01 08:00:00'), (29, 63, '2026-03-02 09:00:00'), (29, 7, '2026-03-03 10:00:00'),
+(29, 12, '2026-03-04 11:00:00'), (29, 110, '2026-03-05 12:00:00'), (29, 80, '2026-03-06 13:00:00'),
+(30, 64, '2026-03-01 08:00:00'), (30, 65, '2026-03-02 09:00:00'), (30, 50, '2026-03-03 10:00:00'),
+(30, 1, '2026-03-04 11:00:00'), (30, 15, '2026-03-05 12:00:00'), (30, 75, '2026-03-06 13:00:00'),
+(31, 66, '2026-03-01 08:00:00'), (31, 66, '2026-03-04 09:00:00'), (31, 67, '2026-03-02 10:00:00'),
+(31, 82, '2026-03-03 11:00:00'), (31, 84, '2026-03-05 12:00:00'), (31, 100, '2026-03-06 13:00:00'),
+(32, 68, '2026-03-01 08:00:00'), (32, 69, '2026-03-02 09:00:00'), (32, 72, '2026-03-03 10:00:00'),
+(32, 46, '2026-03-04 11:00:00'), (32, 109, '2026-03-05 12:00:00'), (32, 78, '2026-03-06 13:00:00'),
+(33, 70, '2026-03-01 08:00:00'), (33, 71, '2026-03-02 09:00:00'), (33, 60, '2026-03-03 10:00:00'),
+(33, 46, '2026-03-04 11:00:00'), (33, 112, '2026-03-05 12:00:00'), (33, 104, '2026-03-06 13:00:00'),
+(34, 72, '2026-03-01 08:00:00'), (34, 73, '2026-03-02 09:00:00'), (34, 62, '2026-03-03 10:00:00'),
+(34, 66, '2026-03-04 11:00:00'), (34, 78, '2026-03-05 12:00:00'), (34, 102, '2026-03-06 13:00:00'),
+(35, 74, '2026-03-01 08:00:00'), (35, 75, '2026-03-02 09:00:00'), (35, 86, '2026-03-03 10:00:00'),
+(35, 46, '2026-03-04 11:00:00'), (35, 120, '2026-03-05 12:00:00'), (35, 58, '2026-03-06 13:00:00'),
+(36, 76, '2026-03-01 08:00:00'), (36, 77, '2026-03-02 09:00:00'), (36, 88, '2026-03-03 10:00:00'),
+(36, 46, '2026-03-04 11:00:00'), (36, 68, '2026-03-05 12:00:00'), (36, 50, '2026-03-06 13:00:00'),
+(37, 78, '2026-03-01 08:00:00'), (37, 79, '2026-03-02 09:00:00'), (37, 86, '2026-03-03 10:00:00'),
+(37, 87, '2026-03-04 11:00:00'), (37, 96, '2026-03-05 12:00:00'), (37, 97, '2026-03-06 13:00:00'),
+(38, 80, '2026-03-01 08:00:00'), (38, 81, '2026-03-02 09:00:00'), (38, 86, '2026-03-03 10:00:00'),
+(38, 135, '2026-03-04 11:00:00'), (38, 104, '2026-03-05 12:00:00'), (38, 97, '2026-03-06 13:00:00'),
+(39, 82, '2026-03-01 08:00:00'), (39, 83, '2026-03-02 09:00:00'), (39, 66, '2026-03-03 10:00:00'),
+(39, 107, '2026-03-04 11:00:00'), (39, 74, '2026-03-05 12:00:00'), (39, 112, '2026-03-06 13:00:00'),
+(40, 84, '2026-03-01 08:00:00'), (40, 85, '2026-03-02 09:00:00'), (40, 102, '2026-03-03 10:00:00'),
+(40, 98, '2026-03-04 11:00:00'), (40, 111, '2026-03-05 12:00:00'), (40, 46, '2026-03-06 13:00:00'),
+(41, 86, '2026-03-01 08:00:00'), (41, 87, '2026-03-02 09:00:00'), (41, 36, '2026-03-03 10:00:00'),
+(41, 9, '2026-03-04 11:00:00'), (41, 102, '2026-03-05 12:00:00'), (41, 116, '2026-03-06 13:00:00'),
+(42, 88, '2026-03-01 08:00:00'), (42, 89, '2026-03-02 09:00:00'), (42, 18, '2026-03-03 10:00:00'),
+(42, 126, '2026-03-04 11:00:00'), (42, 134, '2026-03-05 12:00:00'), (42, 95, '2026-03-06 13:00:00'),
+(43, 90, '2026-03-01 08:00:00'), (43, 91, '2026-03-02 09:00:00'), (43, 122, '2026-03-03 10:00:00'),
+(43, 131, '2026-03-04 11:00:00'), (43, 46, '2026-03-05 12:00:00'), (43, 88, '2026-03-06 13:00:00'),
+(44, 92, '2026-03-01 08:00:00'), (44, 93, '2026-03-02 09:00:00'), (44, 42, '2026-03-03 10:00:00'),
+(44, 133, '2026-03-04 11:00:00'), (44, 118, '2026-03-05 12:00:00'), (44, 94, '2026-03-06 13:00:00'),
+(45, 94, '2026-03-01 08:00:00'), (45, 95, '2026-03-02 09:00:00'), (45, 114, '2026-03-03 10:00:00'),
+(45, 115, '2026-03-04 11:00:00'), (45, 84, '2026-03-05 12:00:00'), (45, 77, '2026-03-06 13:00:00'),
+(46, 96, '2026-03-01 08:00:00'), (46, 97, '2026-03-02 09:00:00'), (46, 46, '2026-03-03 10:00:00'),
+(46, 60, '2026-03-04 11:00:00'), (46, 124, '2026-03-05 12:00:00'), (46, 92, '2026-03-06 13:00:00'),
+(47, 98, '2026-03-01 08:00:00'), (47, 99, '2026-03-02 09:00:00'), (47, 95, '2026-03-03 10:00:00'),
+(47, 122, '2026-03-04 11:00:00'), (47, 88, '2026-03-05 12:00:00'), (47, 132, '2026-03-06 13:00:00'),
+(48, 100, '2026-03-01 08:00:00'), (48, 101, '2026-03-02 09:00:00'), (48, 68, '2026-03-03 10:00:00'),
+(48, 81, '2026-03-04 11:00:00'), (48, 46, '2026-03-05 12:00:00'), (48, 110, '2026-03-06 13:00:00'),
+(49, 102, '2026-03-01 08:00:00'), (49, 103, '2026-03-02 09:00:00'), (49, 105, '2026-03-03 10:00:00'),
+(49, 55, '2026-03-04 11:00:00'), (49, 34, '2026-03-05 12:00:00'), (49, 94, '2026-03-06 13:00:00'),
+(50, 104, '2026-03-01 08:00:00'), (50, 105, '2026-03-02 09:00:00'), (50, 66, '2026-03-03 10:00:00'),
+(50, 46, '2026-03-04 11:00:00'), (50, 72, '2026-03-05 12:00:00'), (50, 112, '2026-03-06 13:00:00');
+GO
+
+INSERT INTO USER_SONGS (user_id, song_id, listened_at) VALUES
+(51, 1, '2026-03-01 08:00:00'), (51, 17, '2026-03-02 09:00:00'), (51, 66, '2026-03-03 10:00:00'),
+(51, 104, '2026-03-04 11:00:00'), (51, 46, '2026-03-05 12:00:00'),
+(52, 46, '2026-03-01 08:00:00'), (52, 50, '2026-03-02 09:00:00'), (52, 66, '2026-03-03 10:00:00'),
+(52, 82, '2026-03-04 11:00:00'), (52, 102, '2026-03-05 12:00:00'),
+(53, 55, '2026-03-01 08:00:00'), (53, 23, '2026-03-02 09:00:00'), (53, 127, '2026-03-03 10:00:00'),
+(53, 105, '2026-03-04 11:00:00'), (53, 34, '2026-03-05 12:00:00'),
+(54, 68, '2026-03-01 08:00:00'), (54, 112, '2026-03-02 09:00:00'), (54, 90, '2026-03-03 10:00:00'),
+(54, 84, '2026-03-04 11:00:00'), (54, 3, '2026-03-05 12:00:00'),
+(55, 96, '2026-03-01 08:00:00'), (55, 26, '2026-03-02 09:00:00'), (55, 118, '2026-03-03 10:00:00'),
+(55, 58, '2026-03-04 11:00:00'), (55, 97, '2026-03-05 12:00:00'),
+(56, 124, '2026-03-01 08:00:00'), (56, 52, '2026-03-02 09:00:00'), (56, 60, '2026-03-03 10:00:00'),
+(56, 122, '2026-03-04 11:00:00'), (56, 46, '2026-03-05 12:00:00'),
+(57, 105, '2026-03-01 08:00:00'), (57, 94, '2026-03-02 09:00:00'), (57, 56, '2026-03-03 10:00:00'),
+(57, 18, '2026-03-04 11:00:00'), (57, 120, '2026-03-05 12:00:00'),
+(58, 74, '2026-03-01 08:00:00'), (58, 80, '2026-03-02 09:00:00'), (58, 90, '2026-03-03 10:00:00'),
+(58, 106, '2026-03-04 11:00:00'), (58, 46, '2026-03-05 12:00:00'),
+(59, 7, '2026-03-01 08:00:00'), (59, 55, '2026-03-02 09:00:00'), (59, 125, '2026-03-03 10:00:00'),
+(59, 23, '2026-03-04 11:00:00'), (59, 66, '2026-03-05 12:00:00'),
+(60, 102, '2026-03-01 08:00:00'), (60, 36, '2026-03-02 09:00:00'), (60, 9, '2026-03-03 10:00:00'),
+(60, 50, '2026-03-04 11:00:00'), (60, 124, '2026-03-05 12:00:00'),
+-- Existing users listening to new songs (Feb 2026)
+(1, 46, '2026-02-01 08:00:00'), (1, 46, '2026-02-10 09:00:00'), (1, 46, '2026-02-20 10:00:00'),
+(2, 46, '2026-02-02 11:00:00'), (2, 46, '2026-02-15 12:00:00'),
+(3, 46, '2026-02-05 13:00:00'), (4, 46, '2026-02-08 14:00:00'),
+(1, 50, '2026-02-01 15:00:00'), (2, 50, '2026-02-05 16:00:00'), (3, 50, '2026-02-10 17:00:00'),
+(1, 52, '2026-02-02 08:00:00'), (2, 52, '2026-02-06 09:00:00'),
+(1, 58, '2026-02-03 10:00:00'), (2, 58, '2026-02-07 11:00:00'), (3, 58, '2026-02-12 12:00:00'),
+(1, 60, '2026-02-04 13:00:00'), (2, 60, '2026-02-08 14:00:00'),
+(1, 62, '2026-02-05 15:00:00'), (2, 62, '2026-02-09 16:00:00'),
+(1, 66, '2026-02-06 08:00:00'), (1, 66, '2026-02-15 09:00:00'), (2, 66, '2026-02-10 10:00:00'),
+(3, 66, '2026-02-14 11:00:00'), (4, 66, '2026-02-18 12:00:00'), (5, 66, '2026-02-20 13:00:00'),
+(1, 68, '2026-02-07 14:00:00'), (2, 68, '2026-02-11 15:00:00'),
+(1, 72, '2026-02-08 08:00:00'), (2, 72, '2026-02-12 09:00:00'), (3, 72, '2026-02-16 10:00:00'),
+(1, 74, '2026-02-09 11:00:00'), (2, 74, '2026-02-13 12:00:00'),
+(1, 76, '2026-02-10 13:00:00'), (2, 76, '2026-02-14 14:00:00'),
+(1, 78, '2026-02-11 15:00:00'), (1, 80, '2026-02-12 16:00:00'),
+(1, 82, '2026-02-13 08:00:00'), (2, 82, '2026-02-17 09:00:00'),
+(1, 84, '2026-02-14 10:00:00'), (1, 86, '2026-02-15 11:00:00'),
+(1, 88, '2026-02-16 12:00:00'), (1, 90, '2026-02-17 13:00:00'),
+(1, 92, '2026-02-18 14:00:00'), (2, 92, '2026-02-20 15:00:00'),
+(1, 94, '2026-02-19 08:00:00'), (2, 94, '2026-02-21 09:00:00'),
+(1, 96, '2026-02-01 10:00:00'), (1, 98, '2026-02-02 11:00:00'),
+(1, 100, '2026-02-03 12:00:00'), (1, 102, '2026-02-04 13:00:00'), (2, 102, '2026-02-08 14:00:00'),
+(3, 102, '2026-02-12 15:00:00'), (4, 102, '2026-02-16 16:00:00'),
+(1, 104, '2026-02-05 08:00:00'), (2, 104, '2026-02-09 09:00:00'),
+(1, 106, '2026-02-06 10:00:00'), (1, 108, '2026-02-07 11:00:00'),
+(1, 110, '2026-02-08 12:00:00'), (1, 112, '2026-02-09 13:00:00'), (2, 112, '2026-02-13 14:00:00'),
+(1, 114, '2026-02-10 15:00:00'), (1, 116, '2026-02-11 16:00:00'),
+(1, 118, '2026-02-12 08:00:00'), (2, 118, '2026-02-16 09:00:00'),
+(1, 120, '2026-02-13 10:00:00'), (2, 120, '2026-02-17 11:00:00'), (3, 120, '2026-02-20 12:00:00'),
+(1, 122, '2026-02-14 13:00:00'), (2, 122, '2026-02-18 14:00:00'),
+(1, 124, '2026-02-15 15:00:00'), (2, 124, '2026-02-19 16:00:00'),
+(1, 126, '2026-02-16 08:00:00'), (1, 128, '2026-02-17 09:00:00'),
+(1, 130, '2026-02-18 10:00:00'), (1, 132, '2026-02-19 11:00:00'),
+(1, 134, '2026-02-20 12:00:00'), (2, 134, '2026-02-22 13:00:00'),
+-- Extra listens for popular new songs (March 2026)
+(5, 46, '2026-03-01 08:00:00'), (6, 46, '2026-03-02 09:00:00'), (7, 46, '2026-03-03 10:00:00'),
+(8, 46, '2026-03-04 11:00:00'), (9, 46, '2026-03-05 12:00:00'), (10, 46, '2026-03-06 13:00:00'),
+(11, 46, '2026-03-07 14:00:00'), (12, 46, '2026-03-08 15:00:00'),
+(5, 66, '2026-03-01 14:00:00'), (6, 66, '2026-03-02 15:00:00'), (7, 66, '2026-03-03 16:00:00'),
+(8, 66, '2026-03-04 17:00:00'), (9, 66, '2026-03-05 18:00:00'), (10, 66, '2026-03-06 19:00:00'),
+(5, 102, '2026-03-01 16:00:00'), (6, 102, '2026-03-02 17:00:00'), (7, 102, '2026-03-03 18:00:00'),
+(8, 102, '2026-03-04 19:00:00'), (9, 102, '2026-03-05 20:00:00'),
+(5, 58, '2026-03-02 08:00:00'), (6, 58, '2026-03-03 09:00:00'),
+(5, 72, '2026-03-04 10:00:00'), (6, 72, '2026-03-05 11:00:00'),
+(5, 120, '2026-03-06 12:00:00'), (6, 120, '2026-03-07 13:00:00'),
+(5, 82, '2026-03-08 14:00:00'), (6, 82, '2026-03-09 15:00:00'),
+(5, 92, '2026-03-10 16:00:00'), (6, 92, '2026-03-11 17:00:00'),
+(5, 104, '2026-03-12 18:00:00'), (6, 104, '2026-03-13 19:00:00'),
+(5, 112, '2026-03-14 08:00:00'), (6, 112, '2026-03-15 09:00:00'),
+(11, 66, '2026-03-01 08:00:00'), (12, 66, '2026-03-02 09:00:00'), (13, 66, '2026-03-03 10:00:00'),
+(11, 46, '2026-03-04 11:00:00'), (12, 50, '2026-03-05 12:00:00'), (13, 58, '2026-03-06 13:00:00'),
+(14, 72, '2026-03-07 14:00:00'), (15, 82, '2026-03-08 15:00:00'), (16, 92, '2026-03-09 16:00:00'),
+(17, 102, '2026-03-10 17:00:00'), (18, 112, '2026-03-11 18:00:00'), (19, 120, '2026-03-12 19:00:00'),
+(20, 124, '2026-03-13 20:00:00'), (14, 46, '2026-03-14 08:00:00'), (15, 66, '2026-03-15 09:00:00'),
+(16, 104, '2026-03-16 10:00:00'), (17, 46, '2026-03-17 11:00:00'), (18, 66, '2026-03-17 12:00:00');
+GO
